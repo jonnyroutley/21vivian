@@ -1,1 +1,1 @@
-pub mod housemate;
+pub mod reviews;

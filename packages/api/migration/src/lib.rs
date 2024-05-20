@@ -1,7 +1,6 @@
 pub use sea_orm_migration::prelude::*;
 
-mod m20240509_213250_housemates;
-mod m20240509_214830_birdy;
+mod m20240520_210510_review;
 
 pub struct Migrator;
 
@@ -9,8 +8,7 @@ pub struct Migrator;
 impl MigratorTrait for Migrator {
     fn migrations() -> Vec<Box<dyn MigrationTrait>> {
         vec![
-            Box::new(m20240509_213250_housemates::Migration),
-            Box::new(m20240509_214830_birdy::Migration),
+            Box::new(m20240520_210510_review::Migration)
         ]
     }
 }
