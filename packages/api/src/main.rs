@@ -1,7 +1,9 @@
 use std::env;
-use poem::{ get, handler, listener::TcpListener, web::Path, Route, Server };
-use sea_orm::{ DatabaseConnection, Database, DbErr };
+
 use migration::{ Migrator, MigratorTrait };
+use poem::{ listener::TcpListener, Server };
+use sea_orm::{ Database, DatabaseConnection, DbErr };
+mod routes;
 
 async fn setup() -> Result<DatabaseConnection, DbErr> {
     let db_url = match env::var("DB_URL") {
@@ -18,11 +20,6 @@ async fn setup() -> Result<DatabaseConnection, DbErr> {
     Ok(db)
 }
 
-#[handler]
-fn hello(Path(name): Path<String>) -> String {
-    format!("hello: {}", name)
-}
-
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
     match dotenvy::dotenv() {
@@ -34,6 +31,10 @@ async fn main() -> Result<(), std::io::Error> {
     let db = setup().await.unwrap();
     Migrator::up(&db, None).await.unwrap();
 
-    let app = Route::new().at("/hello/:name", get(hello));
-    Server::new(TcpListener::bind("0.0.0.0:8000")).run(app).await
+    let app = routes::app_routes();
+
+    let api_base_url = env::var("API_BASE_URL").unwrap();
+    // let api_base_url = "127.0.0.1:8000";
+
+    Server::new(TcpListener::bind(api_base_url)).run(app).await
 }
