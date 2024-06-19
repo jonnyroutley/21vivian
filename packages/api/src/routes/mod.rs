@@ -5,10 +5,11 @@ use std::env;
 
 use poem::Route;
 use poem_openapi::OpenApiService;
+use sea_orm::DatabaseConnection;
 
-pub fn app_routes() -> Route {
+pub fn app_routes(db: DatabaseConnection) -> Route {
     let api_base_url = env::var("API_BASE_URL").unwrap();
-    let all_routes = (review::ReviewApi, event::EventApi);
+    let all_routes = (review::ReviewApi{db}, event::EventApi);
     let api_service = OpenApiService::new(all_routes, "API", "1.0").server(
         format!("http://{}", api_base_url)
     );

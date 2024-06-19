@@ -31,7 +31,7 @@ async fn main() -> Result<(), std::io::Error> {
     let db = setup().await.unwrap();
     Migrator::up(&db, None).await.unwrap();
 
-    let app = routes::app_routes();
+    let app = routes::app_routes(db);
 
     let api_base_url = env::var("API_BASE_URL").unwrap();
     // let api_base_url = "127.0.0.1:8000";
