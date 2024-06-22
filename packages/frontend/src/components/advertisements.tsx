@@ -12,7 +12,7 @@ export function GordonsAd() {
 
   return (
     <>
-      <button onClick={() => setOpen(true)}>Click me!</button>
+      <button className="hover:text-rose-200" onClick={() => setOpen(true)}>Click me!</button>
       <Dialog className="relative z-10 text-yellow-300" open={open} onClose={setOpen}>
         <DialogBackdrop
           transition
@@ -65,8 +65,4 @@ export function GordonsAd() {
       </Dialog>
     </>
   )
-}
-
-export function AdButton() {
-  return <button>click me!</button>
 }
