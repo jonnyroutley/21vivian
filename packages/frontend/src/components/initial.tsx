@@ -1,5 +1,6 @@
-import { classNames } from '@/utils/classNames'
 import { Petit_Formal_Script } from 'next/font/google'
+
+import { classNames } from '@/utils/classNames'
 
 const petitFormalScript = Petit_Formal_Script({
   subsets: ['latin'],
@@ -34,16 +35,6 @@ type char =
   | 'Y'
   | 'Z'
 
-export const Initial = ({
-  initial,
-  className,
-}: {
-  initial: char
-  className?: string
-}) => {
-  return (
-    <span className={classNames(petitFormalScript.className, className)}>
-      {initial}
-    </span>
-  )
+export const Initial = ({ initial, className }: { initial: char; className?: string }) => {
+  return <span className={classNames(petitFormalScript.className, className)}>{initial}</span>
 }
