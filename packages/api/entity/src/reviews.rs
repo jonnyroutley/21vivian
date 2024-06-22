@@ -1,8 +1,11 @@
-use sea_orm::entity::prelude::*;
+use chrono::NaiveDateTime;
 use poem_openapi::Object;
+use sea_orm::entity::prelude::*;
+use serde::Serialize;
 
-#[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
+#[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Serialize, Object)]
 #[sea_orm(table_name = "review")]
+#[oai(rename = "Review")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
@@ -11,7 +14,7 @@ pub struct Model {
     pub description: String,
     pub stars: i32,
     pub is_archived: bool,
-    pub created_at: DateTime,
+    pub created_at: NaiveDateTime
 }
 
 #[derive(Object, Debug)]

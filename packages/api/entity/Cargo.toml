@@ -9,7 +9,7 @@ name = "entity"
 path = "src/lib.rs"
 
 [dependencies]
-poem-openapi = { version = "5.0.2", features = ["swagger-ui"] }
+poem-openapi = { version = "5.0.2", features = ["swagger-ui", "chrono"] }
 serde = "1.0.203"
 sea-orm = { version = "0.12", features = [ "sqlx-postgres", "runtime-tokio-rustls", "macros" ] }
-
+chrono = { version = "0.4", default_features = false }
