@@ -20,9 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={playfairDisplay.className}>
-        {children}
-      </body>
+      <body className={playfairDisplay.className}>{children}</body>
     </html>
   )
 }
