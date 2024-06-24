@@ -1,7 +1,7 @@
 use std::env;
 
 use migration::{ Migrator, MigratorTrait };
-use poem::{ listener::TcpListener, Server };
+use poem::{ listener::TcpListener, Server, middleware::Cors, EndpointExt };
 use sea_orm::{ Database, DatabaseConnection, DbErr };
 mod routes;
 
@@ -36,5 +36,5 @@ async fn main() -> Result<(), std::io::Error> {
     let api_base_url = env::var("API_BASE_URL").unwrap();
     // let api_base_url = "127.0.0.1:8000";
 
-    Server::new(TcpListener::bind(api_base_url)).run(app).await
+    Server::new(TcpListener::bind(api_base_url)).run(app.with(Cors::new())).await
 }
