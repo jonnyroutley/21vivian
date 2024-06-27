@@ -1,11 +1,14 @@
 'use server'
 
-import {createReview} from "@hooks/reviews"
- 
+import { createReview, NewReview } from "@/hooks/reviews"
+import { revalidatePath } from "next/cache"
+
 export async function createReviewAction(newReview: NewReview) {
-  await createReview(newReview)
+  const data = await createReview(newReview)
+
+  revalidatePath("/reviews")
 
   return {
-    message: 'Please enter a valid email',
+    message: "success"
   }
 }
