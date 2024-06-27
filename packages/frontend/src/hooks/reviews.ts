@@ -15,8 +15,15 @@ export async function getReviews() {
 type CreateReview = paths["/reviews"]["post"]["requestBody"]["content"]["application/json; charset=utf-8"]
 
 export async function createReview(data: CreateReview) {
-  return fetch("http://localhost:8000/reviews", {
+  console.log("posting", data)
+  const data2 =  await fetch("http://localhost:8000/reviews", {
     method: "POST",
+    headers: {
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify(data)
   })
+  console.debug(data2)
+
+  return data2
 }
