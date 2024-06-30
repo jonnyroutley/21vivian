@@ -23,7 +23,6 @@ function ReviewRow({
   created_at,
   idx,
 }: Omit<components["schemas"]["Review"], "id" | "is_archived"> & { idx: number }) {
-  // const createdAt = new Date(
   return (
     <div
       key={idx + "row"}
@@ -62,23 +61,10 @@ export function CreateReview({ reviews }: { reviews: Review[] }) {
 
   return (
     <>
-      {optimisticReviews
-        .filter((e) => !e.is_archived)
-        .map((e, idx) => (
-          <ReviewRow
-            key={e.id}
-            name={e.name}
-            description={e.description}
-            title={e.title}
-            stars={e.stars}
-            created_at={e.created_at}
-            idx={idx}
-          />
-        ))}
       <div>
         <form
+          className="flex flex-col gap-4"
           action={async (formData: FormData) => {
-            console.log("hey")
             const name = formData.get("name")
             const stars = formData.get("stars") as unknown
             const description = formData.get("description")
@@ -98,16 +84,60 @@ export function CreateReview({ reviews }: { reviews: Review[] }) {
             }
 
             addOptimisticReview(parsed.data)
-            await createReviewAction(parsed.data)
+            // await createReviewAction(parsed.data)
           }}
         >
-          <input type="text" name="name" />
-          <input type="number" name="stars" />
-          <input type="text" name="title" />
-          <textarea name="description" />
-          <button type="submit">Send</button>
+          <div className="flex flex-col gap-4 rounded-md bg-neutral-800 px-4 py-3 shadow-md">
+            <label htmlFor="name" className="text-xl text-white">
+              Your name
+            </label>
+            <input type="text" name="name" id="name" className="rounded-md p-2" />
+
+            <label htmlFor="stars" className="text-xl text-white">
+              Rating /5
+            </label>
+            <input
+              type="number"
+              name="stars"
+              id="stars"
+              className="rounded-md p-2"
+              min={1}
+              max={5}
+            />
+
+            <label htmlFor="title" className="text-xl text-white">
+              Title
+            </label>
+            <input type="text" name="title" id="title" className="rounded-md p-2" />
+
+            <label htmlFor="description" className="text-xl text-white">
+              Description
+            </label>
+            <textarea name="description" id="description" className="rounded-md p-2" />
+
+            <button
+              type="submit"
+              className="mx-auto my-4 rounded-md bg-gradient-to-tr from-neutral-50 to-neutral-400 px-6 py-4 text-xl transition-all hover:ring-2 hover:ring-white hover:ring-offset-2"
+            >
+              Submit
+            </button>
+          </div>
         </form>
       </div>
+      {optimisticReviews
+        .filter((e) => !e.is_archived)
+        .toReversed() // should change this on backend soon
+        .map((e, idx) => (
+          <ReviewRow
+            key={e.id}
+            name={e.name}
+            description={e.description}
+            title={e.title}
+            stars={e.stars}
+            created_at={e.created_at}
+            idx={idx}
+          />
+        ))}
     </>
   )
 }

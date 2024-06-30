@@ -12,16 +12,6 @@ const dmMono = DM_Mono({
 
 export default async function Page() {
   const reviews = await getReviews()
-  reviews.push({
-    id: 5135,
-    name: "The guy next door ",
-    title: "Here is a long test title nice one",
-    description:
-      "Dinner was great, the service was excellent, and the ambiance was perfect. I would definitely recommend this place to my friends.",
-    stars: 2,
-    created_at: "2021-09-20T20:00:00",
-    is_archived: false,
-  })
 
   return (
     <main
@@ -32,7 +22,6 @@ export default async function Page() {
     >
       <div className="flex w-full max-w-lg flex-col gap-8">
         <h1 className="text-6xl lg:text-8xl">Reviews</h1>
-        {/* <CreateReview reviews={reviews} /> */}
         <div className="flex flex-col gap-2 md:gap-6">
           <CreateReview reviews={reviews} />
         </div>
