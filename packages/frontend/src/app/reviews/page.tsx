@@ -1,8 +1,8 @@
 import { DM_Mono } from "next/font/google"
 
 import { CreateReview } from "@/components/CreateReview"
-import { getReviews } from "@/hooks/reviews"
 import { cn } from "@/lib/utils"
+import { getReviews } from "../actions"
 
 const dmMono = DM_Mono({
   weight: "400",
