@@ -1,6 +1,6 @@
 "use client"
 
-import { useOptimistic } from "react"
+import { useOptimistic, useState } from "react"
 import { z } from "zod"
 
 import { createReviewAction } from "@/app/actions"
@@ -9,10 +9,10 @@ import { NewReview, Review } from "@/hooks/reviews"
 import { cn, formatDateTime } from "@/lib/utils"
 
 const inputReviewSchema = z.object({
-  name: z.string(),
-  stars: z.number().min(0).max(5),
-  title: z.string(),
-  description: z.string(),
+  name: z.string().min(1, "Please enter a name"),
+  stars: z.number({ message: "Please select a rating" }).min(0).max(5),
+  title: z.string().min(1, "Please enter a title"),
+  description: z.string().min(1, "Please enter a description"),
 })
 
 function ReviewRow({
@@ -46,6 +46,7 @@ function ReviewRow({
 }
 
 export function CreateReview({ reviews }: { reviews: Review[] }) {
+  const [error, setError] = useState<string>()
   const [optimisticReviews, addOptimisticReview] = useOptimistic<Review[], NewReview>(
     reviews,
     (state, newReview) => [
@@ -78,8 +79,10 @@ export function CreateReview({ reviews }: { reviews: Review[] }) {
             })
 
             if (parsed.error) {
+              setError(parsed.error.errors[0]?.message)
               return
             }
+            setError(undefined)
             addOptimisticReview(parsed.data)
             await createReviewAction(parsed.data)
           }}
@@ -106,7 +109,7 @@ export function CreateReview({ reviews }: { reviews: Review[] }) {
                       />
                       <label
                         htmlFor={`stars-${idx}`}
-                        className="opacity-50 hover:cursor-pointer peer-checked:opacity-100 peer-hover:opacity-100 px-1 hover:text-lg"
+                        className="px-1 opacity-50 hover:cursor-pointer hover:text-lg peer-checked:opacity-100 peer-hover:opacity-100"
                       >
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
                           🐈‍⬛
@@ -127,7 +130,7 @@ export function CreateReview({ reviews }: { reviews: Review[] }) {
               Description
             </label>
             <textarea name="description" id="description" className="rounded-md p-2" />
-
+            {error && <p className="text-red-100">{error}</p>}
             <button
               type="submit"
               className="mx-auto my-4 rounded-md bg-gradient-to-tr from-neutral-50 to-neutral-400 px-6 py-4 text-xl transition-all hover:ring-2 hover:ring-white hover:ring-offset-2"
