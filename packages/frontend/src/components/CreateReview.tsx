@@ -80,7 +80,6 @@ export function CreateReview({ reviews }: { reviews: Review[] }) {
             if (parsed.error) {
               return
             }
-
             addOptimisticReview(parsed.data)
             await createReviewAction(parsed.data)
           }}
@@ -91,17 +90,31 @@ export function CreateReview({ reviews }: { reviews: Review[] }) {
             </label>
             <input type="text" name="name" id="name" className="rounded-md p-2" />
 
-            <label htmlFor="stars" className="text-xl text-white">
-              Rating /5
-            </label>
-            <input
-              type="number"
-              name="stars"
-              id="stars"
-              className="rounded-md p-2"
-              min={1}
-              max={5}
-            />
+            <fieldset>
+              <div className="flex flex-col gap-4">
+                <legend className="text-xl text-white">Rating /5</legend>
+                <div className="flex flex-row-reverse justify-end gap-4">
+                  {Array.from(Array(5)).map((_, idx) => (
+                    <>
+                      <input
+                        key={idx}
+                        type="radio"
+                        name="stars"
+                        value={5 - idx}
+                        id={`stars-${idx}`}
+                        className="peer hidden"
+                      />
+                      <label
+                        htmlFor={`stars-${idx}`}
+                        className="flex h-10 w-10 items-center justify-center rounded-full bg-white opacity-50 active:animate-bounce peer-checked:opacity-100 peer-hover:opacity-100"
+                      >
+                        🐈‍⬛
+                      </label>
+                    </>
+                  ))}
+                </div>
+              </div>
+            </fieldset>
 
             <label htmlFor="title" className="text-xl text-white">
               Title
