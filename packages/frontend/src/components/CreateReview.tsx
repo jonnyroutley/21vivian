@@ -93,7 +93,7 @@ export function CreateReview({ reviews }: { reviews: Review[] }) {
             <fieldset>
               <div className="flex flex-col gap-4">
                 <legend className="text-xl text-white">Rating /5</legend>
-                <div className="flex flex-row-reverse justify-end gap-4">
+                <div className="flex flex-row-reverse justify-end">
                   {Array.from(Array(5)).map((_, idx) => (
                     <>
                       <input
@@ -106,9 +106,11 @@ export function CreateReview({ reviews }: { reviews: Review[] }) {
                       />
                       <label
                         htmlFor={`stars-${idx}`}
-                        className="flex h-10 w-10 items-center justify-center rounded-full bg-white opacity-50 active:animate-bounce peer-checked:opacity-100 peer-hover:opacity-100"
+                        className="opacity-50 hover:cursor-pointer peer-checked:opacity-100 peer-hover:opacity-100 px-1 hover:text-lg"
                       >
-                        🐈‍⬛
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
+                          🐈‍⬛
+                        </div>
                       </label>
                     </>
                   ))}
