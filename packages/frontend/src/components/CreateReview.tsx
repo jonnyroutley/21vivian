@@ -77,14 +77,12 @@ export function CreateReview({ reviews }: { reviews: Review[] }) {
               title,
             })
 
-            console.log(parsed)
-
             if (parsed.error) {
               return
             }
 
             addOptimisticReview(parsed.data)
-            // await createReviewAction(parsed.data)
+            await createReviewAction(parsed.data)
           }}
         >
           <div className="flex flex-col gap-4 rounded-md bg-neutral-800 px-4 py-3 shadow-md">

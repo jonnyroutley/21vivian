@@ -16,8 +16,6 @@ export default function LandingPage() {
     // @ts-ignore
     const { birthYear } = event.target.elements
 
-    console.log(birthYear)
-
     if (birthYear.value && birthYear.value < maxAcceptableYear) {
       setPushing(true)
       setTimeout(() => {

@@ -9,7 +9,6 @@ type CreateReview =
   paths["/reviews"]["post"]["requestBody"]["content"]["application/json; charset=utf-8"]
 
 export async function createReview(data: CreateReview) {
-  console.log("posting", data)
   const data2 = await fetch(`${config.apiBaseUrl}/reviews`, {
     method: "POST",
     headers: {
@@ -17,7 +16,6 @@ export async function createReview(data: CreateReview) {
     },
     body: JSON.stringify(data),
   })
-  console.debug(data2)
 
   return data2
 }
