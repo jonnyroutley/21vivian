@@ -28,7 +28,6 @@ jobs:
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           TARGET: '~/api/'
           SCRIPT_BEFORE: |
-            kill $( lsof -i:8000 -t )
+            sudo systemctl stop rust-api.service
           SCRIPT_AFTER: |
-            cd ~/api/
-            ./api
+            sudo systemctl start rust-api.service
