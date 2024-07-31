@@ -1,5 +1,6 @@
 use std::env;
 
+use chrono::Utc;
 use migration::{ Migrator, MigratorTrait };
 use poem::{ listener::TcpListener, Server, middleware::Cors, EndpointExt };
 use sea_orm::{ Database, DatabaseConnection, DbErr };
@@ -31,7 +32,8 @@ async fn main() -> Result<(), std::io::Error> {
     let db = setup().await.unwrap();
     Migrator::up(&db, None).await.unwrap();
 
-    let app = routes::app_routes(db);
+    let startup_time = Utc::now();
+    let app = routes::app_routes(db, startup_time);
 
     let api_base_url = env::var("API_BASE_URL").unwrap();
     // let api_base_url = "127.0.0.1:8000";

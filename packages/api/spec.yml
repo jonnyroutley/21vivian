@@ -6,6 +6,7 @@ servers:
 - url: http://localhost:8000
 tags:
 - name: Event
+- name: Info
 - name: Review
 paths:
   /reviews:
@@ -72,6 +73,17 @@ paths:
       responses:
         '200':
           description: ''
+          content:
+            text/plain; charset=utf-8:
+              schema:
+                type: string
+  /info:
+    get:
+      tags:
+      - Info
+      responses:
+        '200':
+          description: Returns when the review is successfully created.
           content:
             text/plain; charset=utf-8:
               schema:
