@@ -12,7 +12,8 @@ pub struct Model {
     pub name: String,
     pub location: String,
     pub description: String,
-    pub date: NaiveDateTime,
+    pub starts_at: NaiveDateTime,
+    pub ends_at: NaiveDateTime,
     pub is_archived: bool,
     pub created_at: NaiveDateTime,
 }
@@ -20,9 +21,10 @@ pub struct Model {
 #[derive(Object, Debug)]
 pub struct InputModel {
     pub name: String,
-    pub title: String,
+    pub location: String,
     pub description: String,
-    pub stars: i32,
+    pub starts_at: NaiveDateTime,
+    pub ends_at: NaiveDateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]

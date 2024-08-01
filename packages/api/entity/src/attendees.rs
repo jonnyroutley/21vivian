@@ -17,6 +17,7 @@ pub struct Model {
 #[derive(Object, Debug)]
 pub struct InputModel {
     pub name: String,
+    pub event_id: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]
