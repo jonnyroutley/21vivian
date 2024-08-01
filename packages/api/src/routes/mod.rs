@@ -32,7 +32,11 @@ pub fn app_routes(db: DatabaseConnection, startup_time: DateTime<Utc>) -> Route 
         Err(_) => panic!("Fail to get API_BASE_URL variable"),
     };
 
-    let all_routes = (review::ReviewApi { db }, event::EventApi, info::InfoApi { startup_time });
+    let all_routes = (
+        // review::ReviewApi { &db },
+        event::EventApi { db },
+        info::InfoApi { startup_time },
+    );
     let api_service = OpenApiService::new(all_routes, "API", "1.0").server(
         format!("http://{}", api_base_url)
     );
