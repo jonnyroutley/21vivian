@@ -20,7 +20,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/EventResponse'
+                  $ref: '#/components/schemas/FlattenedEvent'
         '500':
           description: Likely an issue with the database connection.
   /info:
@@ -55,7 +55,7 @@ components:
         created_at:
           type: string
           format: naive-date-time
-    Event:
+    FlattenedEvent:
       type: object
       required:
       - id
@@ -64,8 +64,7 @@ components:
       - description
       - starts_at
       - ends_at
-      - is_archived
-      - created_at
+      - attendees
       properties:
         id:
           type: integer
@@ -82,19 +81,6 @@ components:
         ends_at:
           type: string
           format: naive-date-time
-        is_archived:
-          type: boolean
-        created_at:
-          type: string
-          format: naive-date-time
-    EventResponse:
-      type: object
-      required:
-      - event
-      - attendees
-      properties:
-        event:
-          $ref: '#/components/schemas/Event'
         attendees:
           type: array
           items:
