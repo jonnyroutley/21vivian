@@ -13,7 +13,7 @@ pub struct EventApi {
 }
 
 #[derive(Clone, PartialEq, Eq, Debug, Object)]
-struct FlattenedEvent {
+struct EventDTO {
     pub id: i32,
     pub name: String,
     pub location: String,
@@ -32,7 +32,7 @@ pub struct ErrorMessage {
 enum GetEventsResponse {
     /// Returns a list of the events
     #[oai(status = 200)]
-    Ok(Json<Vec<FlattenedEvent>>),
+    Ok(Json<Vec<EventDTO>>),
     // Ok(Json<Vec<(entity::events::Model, Vec<entity::attendees::Model>)>>),
     /// Likely an issue with the database connection.
     #[oai(status = 500)]
@@ -47,14 +47,14 @@ impl EventApi {
             Ok(events) => {
                 println!("{:?}", events);
 
-                let events_mapped: Vec<FlattenedEvent> = events
+                let events_mapped: Vec<EventDTO> = events
                     .into_iter()
                     .map(|(event, attendees)| {
-                        FlattenedEvent {
+                        EventDTO {
                             id: event.id,
                             name: event.name,
                             location: event.location,
-                            description:event.description,
+                            description: event.description,
                             starts_at: event.starts_at,
                             ends_at: event.ends_at,
                             attendees,

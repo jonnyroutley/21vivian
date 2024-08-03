@@ -20,7 +20,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FlattenedEvent'
+                  $ref: '#/components/schemas/EventDTO'
         '500':
           description: Likely an issue with the database connection.
   /info:
@@ -55,7 +55,7 @@ components:
         created_at:
           type: string
           format: naive-date-time
-    FlattenedEvent:
+    EventDTO:
       type: object
       required:
       - id
