@@ -69,17 +69,17 @@ export function SingleEvent({ event }: { event: components["schemas"]["EventDTO"
           <h3 className="text-2xl tracking-wide">{event.name}</h3>
           <h4 className="font-sans">{event.description}</h4>
           <div className="flex w-full flex-row justify-between p-1 font-mono text-xs">
-            <p className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <LocationPinIcon /> {event.location}
-            </p>
-            <p className="peer flex items-center gap-2 p-1 hover:bg-neutral-800">
+            </div>
+            <div className="group flex items-center gap-2 p-1 hover:bg-neutral-800">
               <AttendeesIcon /> {event.attendees.length}
-            </p>
-            <ul className="peer invisible absolute right-80 peer-hover:visible">
-              {event.attendees.map((attendee) => (
-                <li key={attendee.id}>{attendee.name}</li>
-              ))}
-            </ul>
+              <ul className="peer invisible absolute left-[50%] lg:left-[75%] z-10 bg-neutral-800 px-8 py-6 group-hover:visible">
+                {event.attendees.map((attendee) => (
+                  <li key={attendee.id}>{attendee.name}</li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </div>
