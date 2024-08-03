@@ -33,8 +33,8 @@ pub fn app_routes(db: DatabaseConnection, startup_time: DateTime<Utc>) -> Route 
     };
 
     let all_routes = (
-        // review::ReviewApi { &db },
-        event::EventApi { db },
+        review::ReviewApi { db: db.clone() },
+        event::EventApi { db: db.clone() },
         info::InfoApi { startup_time },
     );
     let api_service = OpenApiService::new(all_routes, "API", "1.0").server(

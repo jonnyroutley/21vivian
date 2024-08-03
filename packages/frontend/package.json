@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "types": "bunx openapi-typescript ../api/spec.yml -o ./src/types/schema.d.ts"
+    "types": "bunx openapi-typescript ../api/spec.yml -o ./src/client/schema.d.ts"
   },
   "dependencies": {
     "@headlessui/react": "^2.1.0",
