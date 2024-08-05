@@ -5,6 +5,7 @@ import { TypeAnimation } from "react-type-animation"
 
 import { GordonsAd } from "@/components/advertisements"
 import { Initial } from "@/components/initial"
+import { NavButton } from "@/components/nav"
 
 export default function Home() {
   return (
@@ -25,7 +26,7 @@ export default function Home() {
           </span>
         </h1>
         <h2 className="animate-pulse text-xs lg:text-base">Coming soon...</h2>
-        <Link href={"/reviews"} className="text-yellow-300 hover:text-yellow-200 text-xl">
+        <Link href={"/reviews"} className="text-xl text-yellow-300 hover:text-yellow-200">
           Leave a review
         </Link>
         <GordonsAd />
