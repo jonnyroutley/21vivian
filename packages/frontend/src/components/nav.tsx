@@ -6,15 +6,12 @@ import { useEffect, useState } from "react"
 import { useMousePosition } from "@/hooks/useMousePosition"
 import { cn } from "@/lib/utils"
 
-function trim(input: number) {
-  const sign = Math.sign(input)
-  const absoluteValue = Math.abs(input)
+function curve(distance: number) {
+  const gain = 0.5
+  const shift = 1
+  const spread = 40
 
-  if (absoluteValue >= 100) {
-    return 10 * sign
-  }
-
-  return (absoluteValue / 10) * sign
+  return (gain * 1) / Math.cosh(distance / spread - shift)
 }
 
 const NavItems = [
@@ -46,16 +43,19 @@ export function NavButton() {
     y: null,
   })
 
-  const base_translate_x = trim((mousePosition.x ?? 0) - (navPosition.x ?? 0))
-  const base_translate_y = trim((mousePosition.y ?? 0) - (navPosition.y ?? 0))
+  const xOff = (mousePosition.x ?? 0) - (navPosition.x ?? 0)
+  const yOff = (mousePosition.y ?? 0) - (navPosition.y ?? 0)
+  const distance = Math.sqrt(xOff ** 2 + yOff ** 2)
+  const translateX = curve(distance) * xOff
+  const translateY = curve(distance) * yOff
 
   return (
     <div
       className={cn(
-        "invisible absolute right-8 top-8 h-12 w-12 rounded-full bg-yellow-400 lg:visible md:h-16 md:w-16",
+        "invisible absolute right-8 top-8 h-12 w-12 rounded-full bg-yellow-400 md:h-16 md:w-16 lg:visible",
       )}
       style={{
-        transform: `translate(${base_translate_x}px, ${base_translate_y}px)`,
+        transform: `translate(${translateX}px, ${translateY}px)`,
       }}
       ref={(el) => {
         if (!el) {
@@ -70,7 +70,7 @@ export function NavButton() {
       <button
         className="h-full w-full rounded-full bg-yellow-500"
         style={{
-          transform: `translate(${base_translate_x * 1.1}px, ${base_translate_y * 1.1}px)`,
+          transform: `translate(${translateX * 1.1}px, ${translateY * 1.1}px)`,
         }}
         type="button"
         onClick={() => setShowMenu(!showMenu)}
@@ -84,7 +84,7 @@ export function NavButton() {
               <li
                 key={item.href}
                 style={{
-                  transform: `translate(${base_translate_x - item.xOff}px, ${base_translate_y - item.yOff}px )`,
+                  transform: `translate(${translateX - item.xOff}px, ${translateY - item.yOff}px )`,
                 }}
               >
                 <Link
