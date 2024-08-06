@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { usePathname } from "next/navigation"
+import { useState } from "react"
 
 import { useMousePosition } from "@/hooks/useMousePosition"
 import { cn } from "@/lib/utils"
@@ -34,8 +35,43 @@ const NavItems = [
     yOff: 30,
   },
 ]
+type RouteColour = {
+  primaryColour: string
+  secondaryColour: string
+  textColour: string
+}
+
+type Routes = "home" | "reviews" | "events"
+
+const RouteColours: Record<Routes, RouteColour> = {
+  home: {
+    primaryColour: "#eab308",
+    secondaryColour: "#facc15",
+    textColour: "#fefce8",
+  },
+  reviews: {
+    primaryColour: "#eab308",
+    secondaryColour: "#facc15",
+    textColour: "#fefce8",
+  },
+  events: {
+    primaryColour: "#FF4848",
+    secondaryColour: "#ef4444",
+    textColour: "#FF4848",
+  },
+}
 
 export function NavButton() {
+  const pathname = usePathname()
+  const path = pathname.split("/").at(-1)
+
+  let colours: RouteColour
+  if (path && path in RouteColours) {
+    colours = RouteColours[path as keyof typeof RouteColours]
+  } else {
+    colours = RouteColours.home // TODO: make default
+  }
+
   const mousePosition = useMousePosition()
   const [showMenu, setShowMenu] = useState(false)
   const [navPosition, setNavPosition] = useState<{ x: number | null; y: number | null }>({
@@ -52,10 +88,11 @@ export function NavButton() {
   return (
     <div
       className={cn(
-        "invisible absolute right-8 top-8 h-12 w-12 rounded-full bg-yellow-400 md:h-16 md:w-16 lg:visible",
+        "invisible absolute right-8 top-8 h-12 w-12 rounded-full md:h-16 md:w-16 lg:visible",
       )}
       style={{
         transform: `translate(${translateX}px, ${translateY}px)`,
+        background: colours.secondaryColour,
       }}
       ref={(el) => {
         if (!el) {
@@ -68,9 +105,10 @@ export function NavButton() {
       }}
     >
       <button
-        className="h-full w-full rounded-full bg-yellow-500"
+        className="h-full w-full rounded-full"
         style={{
           transform: `translate(${translateX * 1.1}px, ${translateY * 1.1}px)`,
+          background: colours.primaryColour,
         }}
         type="button"
         onClick={() => setShowMenu(!showMenu)}
@@ -88,8 +126,9 @@ export function NavButton() {
                 }}
               >
                 <Link
-                  className="p-1 text-yellow-50 transition-colors duration-200 hover:text-yellow-500"
+                  className="p-1 transition-colors duration-200"
                   href={item.href}
+                  style={{ color: colours.textColour }}
                 >
                   {item.text}
                 </Link>

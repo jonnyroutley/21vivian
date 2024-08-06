@@ -5,7 +5,6 @@ import { TypeAnimation } from "react-type-animation"
 
 import { GordonsAd } from "@/components/advertisements"
 import { Initial } from "@/components/initial"
-import { NavButton } from "@/components/nav"
 
 export default function Home() {
   return (
