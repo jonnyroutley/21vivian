@@ -1,7 +1,4 @@
-import { useOptimistic, useState } from "react"
-
-import { components } from "@/client/schema"
-import { EventDto, NewAttendee } from "@/hooks/events"
+import { EventDto } from "@/hooks/events"
 
 import { DiagonalLine, SingleEvent } from "./SingleEvent"
 

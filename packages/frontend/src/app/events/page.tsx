@@ -1,11 +1,9 @@
 import { League_Gothic } from "next/font/google"
-import { useRouter } from "next/navigation"
 
 import { components } from "@/client/schema"
 import { config } from "@/lib/config"
 
 import { Events } from "./Events"
-import { DiagonalLine, SingleEvent } from "./SingleEvent"
 
 async function getEvents(): Promise<components["schemas"]["EventDto"][]> {
   const res = await fetch(`${config.apiBaseUrl}/events`, {
