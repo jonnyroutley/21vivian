@@ -1,6 +1,6 @@
 import { EventDto } from "@/hooks/events"
 
-import { DiagonalLine, SingleEvent } from "@/app/events/SingleEvent"
+import { DiagonalLine, SingleEvent } from "./singleEvent"
 
 export function Events({ events }: { events: EventDto[] }) {
   return (
