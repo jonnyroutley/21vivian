@@ -105,7 +105,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json; charset=utf-8": components["schemas"]["EventDTO"][];
+                        "application/json; charset=utf-8": components["schemas"]["EventDto"][];
                     };
                 };
                 /** @description Likely an issue with the database connection. */
@@ -119,6 +119,50 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/attendee": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json; charset=utf-8": components["schemas"]["AttendeeInputModel"];
+                };
+            };
+            responses: {
+                /** @description Returns a list of the events */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Likely an issue with the database connection. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -173,10 +217,15 @@ export interface components {
             /** Format: naive-date-time */
             created_at: string;
         };
+        AttendeeInputModel: {
+            name: string;
+            /** Format: int32 */
+            event_id: number;
+        };
         ErrorMessage: {
             message: string;
         };
-        EventDTO: {
+        EventDto: {
             /** Format: int32 */
             id: number;
             name: string;

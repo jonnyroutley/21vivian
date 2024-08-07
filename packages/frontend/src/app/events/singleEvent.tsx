@@ -1,6 +1,9 @@
 import moment from "moment"
+import Image from "next/image"
 
 import { components } from "@/client/schema"
+
+import { RsvpButton } from "./RsvpButton"
 
 function LocationPinIcon() {
   return (
@@ -9,7 +12,7 @@ function LocationPinIcon() {
       height="100%"
       viewBox="0 0 24 24"
       aria-label="Location"
-      className="text-ra_red h-6 w-6"
+      className="h-6 w-6 text-ra_red"
     >
       <title>Location</title>
       <g fill="none" fill-rule="evenodd">
@@ -31,7 +34,7 @@ function AttendeesIcon() {
       height="100%"
       viewBox="0 0 24 24"
       aria-label="Person"
-      className="text-ra_red h-6 w-6"
+      className="h-6 w-6 text-ra_red"
     >
       <title>Person</title>
       <g fill="none" fill-rule="evenodd">
@@ -53,18 +56,23 @@ export function DiagonalLine() {
   )
 }
 
-export function SingleEvent({ event }: { event: components["schemas"]["EventDTO"] }) {
+export function SingleEvent({ event }: { event: components["schemas"]["EventDto"] }) {
   return (
     <>
-      <h2 className="text-ra_red inline-flex items-baseline gap-2 text-2xl uppercase">
+      <h2 className="inline-flex items-baseline gap-2 text-2xl uppercase text-ra_red">
         <span className="h-4 w-4">
           <DiagonalLine />
         </span>{" "}
         {moment(event.starts_at).format("ddd, DD MMM")}
       </h2>
-      <div className="flex flex-row gap-4 border-t border-neutral-700 pt-3 text-neutral-50">
-        {/* this will be replaced by image */}
-        <div className="aspect-video w-2/3 bg-neutral-600"></div>
+      <div className="flex flex-col gap-4 border-t border-neutral-700 pt-3 text-neutral-50 md:flex-row">
+        <Image
+          src={"/bbq_pic.jpg"}
+          height={300}
+          width={400}
+          alt="fraser bbq"
+          className="w-full md:w-1/3"
+        />
         <div className="flex w-full flex-col gap-2">
           <h3 className="text-2xl tracking-wide">{event.name}</h3>
           <h4 className="font-sans">{event.description}</h4>
@@ -72,13 +80,16 @@ export function SingleEvent({ event }: { event: components["schemas"]["EventDTO"
             <div className="flex items-center gap-2">
               <LocationPinIcon /> {event.location}
             </div>
+            <RsvpButton eventId={event.id} />
             <div className="group flex items-center gap-2 p-1 hover:bg-neutral-800">
               <AttendeesIcon /> {event.attendees.length}
-              <ul className="peer invisible absolute left-[50%] lg:left-[75%] z-10 bg-neutral-800 px-8 py-6 group-hover:visible">
-                {event.attendees.map((attendee) => (
-                  <li key={attendee.id}>{attendee.name}</li>
-                ))}
-              </ul>
+              {event.attendees.length > 0 && (
+                <ul className="peer invisible absolute left-[50%] z-10 bg-neutral-800 px-8 py-6 group-hover:visible lg:left-[75%]">
+                  {event.attendees.map((attendee) => (
+                    <li key={attendee.id}>{attendee.name}</li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
         </div>

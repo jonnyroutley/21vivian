@@ -56,7 +56,22 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/EventDTO'
+                  $ref: '#/components/schemas/EventDto'
+        '500':
+          description: Likely an issue with the database connection.
+  /events/attendee:
+    post:
+      tags:
+      - Event
+      requestBody:
+        content:
+          application/json; charset=utf-8:
+            schema:
+              $ref: '#/components/schemas/AttendeeInputModel'
+        required: true
+      responses:
+        '200':
+          description: Returns a list of the events
         '500':
           description: Likely an issue with the database connection.
   /info:
@@ -91,6 +106,17 @@ components:
         created_at:
           type: string
           format: naive-date-time
+    AttendeeInputModel:
+      type: object
+      required:
+      - name
+      - event_id
+      properties:
+        name:
+          type: string
+        event_id:
+          type: integer
+          format: int32
     ErrorMessage:
       type: object
       required:
@@ -98,7 +124,7 @@ components:
       properties:
         message:
           type: string
-    EventDTO:
+    EventDto:
       type: object
       required:
       - id

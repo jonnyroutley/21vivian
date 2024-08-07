@@ -1,3 +1,5 @@
+import { revalidatePath } from "next/cache"
+
 import { config } from "@/lib/config"
 
 import { components, paths } from "../client/schema"
@@ -17,5 +19,6 @@ export async function createReview(data: CreateReview) {
     body: JSON.stringify(data),
   })
 
+  revalidatePath("/events")
   return data2
 }

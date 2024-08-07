@@ -1,6 +1,6 @@
 use chrono::NaiveDateTime;
 use poem_openapi::{ payload::Json, OpenApi, Tags, Object, ApiResponse };
-use sea_orm::{ EntityTrait, DatabaseConnection };
+use sea_orm::{ EntityTrait, DatabaseConnection, Set, ActiveModelTrait };
 use entity::{ events, attendees };
 
 #[derive(Tags)]
@@ -13,7 +13,7 @@ pub struct EventApi {
 }
 
 #[derive(Clone, PartialEq, Eq, Debug, Object)]
-struct EventDTO {
+struct EventDto {
     pub id: i32,
     pub name: String,
     pub location: String,
@@ -32,8 +32,17 @@ pub struct ErrorMessage {
 enum GetEventsResponse {
     /// Returns a list of the events
     #[oai(status = 200)]
-    Ok(Json<Vec<EventDTO>>),
-    // Ok(Json<Vec<(entity::events::Model, Vec<entity::attendees::Model>)>>),
+    Ok(Json<Vec<EventDto>>),
+    /// Likely an issue with the database connection.
+    #[oai(status = 500)]
+    InternalServerError,
+}
+
+#[derive(ApiResponse)]
+enum CreateAttendeeResponse {
+    /// Returns a list of the events
+    #[oai(status = 200)]
+    Ok,
     /// Likely an issue with the database connection.
     #[oai(status = 500)]
     InternalServerError,
@@ -47,10 +56,10 @@ impl EventApi {
             Ok(events) => {
                 println!("{:?}", events);
 
-                let events_mapped: Vec<EventDTO> = events
+                let events_mapped: Vec<EventDto> = events
                     .into_iter()
                     .map(|(event, attendees)| {
-                        EventDTO {
+                        EventDto {
                             id: event.id,
                             name: event.name,
                             location: event.location,
@@ -69,5 +78,29 @@ impl EventApi {
                 return GetEventsResponse::InternalServerError;
             }
         }
+    }
+
+    #[oai(path = "/events/attendee", method = "post", tag = "ApiTags::Event")]
+    async fn create_attendee(
+        &self,
+        Json(create_attendee): Json<attendees::AttendeeInputModel>
+    ) -> CreateAttendeeResponse {
+        print!("Saving Attendee: {} for event {}", create_attendee.name, create_attendee.event_id);
+
+        let attendee = attendees::ActiveModel {
+            name: Set(create_attendee.name.to_string()),
+            event_id: Set(create_attendee.event_id),
+            ..Default::default()
+        };
+
+        match attendee.insert(&self.db).await {
+            Ok(_) => println!("Attendee added to event {}", create_attendee.event_id),
+            Err(err) => {
+                println!("Error persisting attendee:\n{:?}", err);
+                return CreateAttendeeResponse::InternalServerError;
+            }
+        }
+
+        return CreateAttendeeResponse::Ok;
     }
 }
