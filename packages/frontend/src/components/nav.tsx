@@ -52,11 +52,11 @@ const RouteColours: Record<Routes, RouteColour> = {
   reviews: {
     primaryColour: "#eab308",
     secondaryColour: "#facc15",
-    textColour: "#fefce8",
+    textColour: "#0a0a0a",
   },
   events: {
     primaryColour: "#FF4848",
-    secondaryColour: "#ef4444",
+    secondaryColour: "#b91c1c",
     textColour: "#FF4848",
   },
 }
@@ -88,7 +88,7 @@ export function NavButton() {
   return (
     <div
       className={cn(
-        "invisible absolute right-8 top-8 h-12 w-12 rounded-full md:h-16 md:w-16 lg:visible",
+        "invisible absolute right-8 top-8 h-12 w-12 rounded-full font-mono md:h-16 md:w-16 lg:visible",
       )}
       style={{
         transform: `translate(${translateX}px, ${translateY}px)`,
@@ -114,7 +114,10 @@ export function NavButton() {
         onClick={() => setShowMenu(!showMenu)}
       ></button>
       <nav
-        className={cn("peer opacity-0 transition-opacity duration-200", showMenu && "opacity-100")}
+        className={cn(
+          "peer invisible opacity-0 transition-opacity duration-200",
+          showMenu && "visible opacity-100",
+        )}
       >
         <ul>
           {NavItems.map((item) => {

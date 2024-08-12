@@ -1,7 +1,7 @@
 "use client"
 
 import { League_Gothic } from "next/font/google"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
@@ -27,14 +27,39 @@ const inputAttendeeSchema = z.object({
   event_id: z.number(),
 })
 
+const EVENTS_KEY = "vivianEvents"
+
+function getLocalSavedEvents() {
+  return JSON.parse(localStorage.getItem(EVENTS_KEY) || "[]") as number[]
+}
+
+function setLocalSavedEvents(itemToAdd: number) {
+  let data = getLocalSavedEvents()
+
+  data.push(itemToAdd)
+
+  return localStorage.setItem(EVENTS_KEY, JSON.stringify(data))
+}
+
 export function RsvpButton({ eventId }: { eventId: number }) {
   const [error, setError] = useState<string>()
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
+  const [canJoinEvent, setCanJoinEvent] = useState(!getLocalSavedEvents().includes(eventId))
+
+  const refreshEvents = () => {
+    const events = getLocalSavedEvents()
+    setCanJoinEvent(!events.includes(eventId))
+  }
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
-        <Button className="ml-auto mr-2 rounded-full border-2 border-ra_red px-2 py-1 font-mono text-xs hover:bg-ra_red">
+        <Button
+          disabled={!canJoinEvent}
+          className={cn(
+            "group ml-auto mr-2 rounded-full border-2 border-ra_red px-2 py-1 font-mono text-xs hover:bg-ra_red",
+          )}
+        >
           RSVP
         </Button>
       </DialogTrigger>
@@ -60,6 +85,8 @@ export function RsvpButton({ eventId }: { eventId: number }) {
             }
             setError(undefined)
             await createEventAction(parsed.data)
+            setLocalSavedEvents(eventIdHidden)
+            refreshEvents()
             setOpen(false)
           }}
         >
