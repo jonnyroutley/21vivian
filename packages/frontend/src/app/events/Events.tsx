@@ -12,12 +12,12 @@ export function Events({ events }: { events: EventDto[] }) {
           </span>{" "}
           Events
         </h1>
-        <div className="group flex items-center rounded-full border-2 border-ra_red px-4 py-2 font-mono text-xs hover:bg-ra_red">
+        {/* <div className="group flex items-center rounded-full border-2 border-ra_red px-4 py-2 font-mono text-xs hover:bg-ra_red">
           Submit event
           <div className="right-18 absolute top-2 font-mono text-xs opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100">
             coming soon!
           </div>
-        </div>
+        </div> */}
       </div>
 
       {events

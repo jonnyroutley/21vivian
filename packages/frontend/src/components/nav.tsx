@@ -86,61 +86,104 @@ export function NavButton() {
   const translateY = curve(distance) * yOff
 
   return (
-    <div
-      className={cn(
-        "invisible absolute right-8 top-8 h-12 w-12 rounded-full font-mono md:h-16 md:w-16 lg:visible",
-      )}
-      style={{
-        transform: `translate(${translateX}px, ${translateY}px)`,
-        background: colours.secondaryColour,
-      }}
-      ref={(el) => {
-        if (!el) {
-          return
-        }
-        const rect = el.getBoundingClientRect()
-        if (navPosition.x === null && navPosition.y === null) {
-          setNavPosition({ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 })
-        }
-      }}
-    >
-      <button
-        className="h-full w-full rounded-full"
-        style={{
-          transform: `translate(${translateX * 1.1}px, ${translateY * 1.1}px)`,
-          background: colours.primaryColour,
-        }}
-        type="button"
-        onClick={() => setShowMenu(!showMenu)}
-      ></button>
-      <nav
+    <>
+      <div
         className={cn(
-          "peer invisible opacity-0 transition-opacity duration-200",
+          "invisible absolute right-8 top-8 h-12 w-12 rounded-full font-mono md:h-16 md:w-16 lg:visible",
+        )}
+        style={{
+          transform: `translate(${translateX}px, ${translateY}px)`,
+          background: colours.secondaryColour,
+        }}
+        ref={(el) => {
+          if (!el) {
+            return
+          }
+          const rect = el.getBoundingClientRect()
+          if (navPosition.x === null && navPosition.y === null) {
+            setNavPosition({ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 })
+          }
+        }}
+      >
+        <button
+          className="h-full w-full rounded-full"
+          style={{
+            transform: `translate(${translateX * 1.1}px, ${translateY * 1.1}px)`,
+            background: colours.primaryColour,
+          }}
+          type="button"
+          onClick={() => setShowMenu(!showMenu)}
+        />
+        <nav
+          className={cn(
+            "peer invisible opacity-0 transition-opacity duration-200",
+            showMenu && "lg:visible lg:opacity-100",
+          )}
+        >
+          <ul>
+            {NavItems.map((item) => {
+              return (
+                <li
+                  key={item.href}
+                  style={{
+                    transform: `translate(${translateX - item.xOff}px, ${translateY - item.yOff}px )`,
+                  }}
+                >
+                  <Link
+                    className="p-1 transition-colors duration-200"
+                    href={item.href}
+                    style={{ color: colours.textColour }}
+                  >
+                    {item.text}
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        </nav>
+      </div>
+      <div
+        className={cn(
+          "invisible absolute right-0 top-0 h-96 w-96 -translate-y-48 translate-x-48 rounded-full bg-red-50 opacity-0 transition-opacity duration-200 lg:invisible",
           showMenu && "visible opacity-100",
         )}
+        style={{ background: colours.secondaryColour }}
+      />
+      <button
+        className="visible absolute right-8 top-8 z-10 h-12 w-12 rounded-full lg:invisible"
+        style={{
+          background: colours.primaryColour,
+        }}
+        onClick={() => setShowMenu(!showMenu)}
+        onBlur={() => setShowMenu(false)}
       >
-        <ul>
-          {NavItems.map((item) => {
-            return (
-              <li
-                key={item.href}
-                style={{
-                  transform: `translate(${translateX - item.xOff}px, ${translateY - item.yOff}px )`,
-                }}
-              >
-                <Link
-                  className="p-1 transition-colors duration-200"
-                  href={item.href}
-                  style={{ color: colours.textColour }}
+        <nav
+          className={cn(
+            "duration=200 opacity-0 transition-opacity lg:invisible",
+            showMenu && "visible opacity-100",
+          )}
+        >
+          <ul className="mt-14 flex w-fit flex-col items-center gap-2 rounded-md font-mono">
+            {NavItems.map((item) => {
+              return (
+                <li
+                  key={item.href}
+                  style={{
+                    transform: `translate(${-item.xOff}px, ${-item.yOff}px )`,
+                  }}
                 >
-                  {item.text}
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
-      </nav>
-      {/* )} */}
-    </div>
+                  <Link
+                    className="p-1 text-neutral-950 transition-colors duration-200"
+                    href={item.href}
+                  >
+                    {item.text}
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        </nav>
+      </button>
+    </>
   )
 }
