@@ -83,8 +83,6 @@ impl EventApi {
         &self,
         Json(create_attendee): Json<attendees::AttendeeInputModel>
     ) -> CreateAttendeeResponse {
-        print!("Saving Attendee: {} for event {}", create_attendee.name, create_attendee.event_id);
-
         let attendee = attendees::ActiveModel {
             name: Set(create_attendee.name.to_string()),
             event_id: Set(create_attendee.event_id),

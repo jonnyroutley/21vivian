@@ -58,8 +58,6 @@ impl ReviewApi {
             Err(error) => { return CreateReviewResponse::BadRequest(Json(error)); }
         }
 
-        print!("Saving Review: {:?}", create_review);
-
         let review = reviews::ActiveModel {
             name: Set(create_review.name.to_string()),
             title: Set(create_review.title),
