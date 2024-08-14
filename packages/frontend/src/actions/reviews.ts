@@ -1,3 +1,5 @@
+"use server"
+
 import { revalidatePath } from "next/cache"
 
 import { config } from "@/lib/config"
@@ -10,15 +12,22 @@ export type NewReview = components["schemas"]["InputModel"]
 type CreateReview =
   paths["/reviews"]["post"]["requestBody"]["content"]["application/json; charset=utf-8"]
 
-export async function createReview(data: CreateReview) {
-  const data2 = await fetch(`${config.apiBaseUrl}/reviews`, {
+export async function getReviews() {
+  const response = await fetch(`${config.apiBaseUrl}/reviews`, { cache: "no-store" })
+
+  const json = (await response.json()) as components["schemas"]["Review"][]
+  return json
+}
+
+export async function createReview(reviewData: CreateReview) {
+  await fetch(`${config.apiBaseUrl}/reviews`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(reviewData),
   })
 
-  revalidatePath("/events")
-  return data2
+  revalidatePath("/reviews")
+  return { message: "success" }
 }

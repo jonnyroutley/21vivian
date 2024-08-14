@@ -4,6 +4,7 @@ import { League_Gothic } from "next/font/google"
 import { useMemo, useState } from "react"
 import { z } from "zod"
 
+import { createEvent } from "@/actions/events"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -17,8 +18,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
-
-import { createEventAction } from "../actions"
 
 const leagueGothic = League_Gothic({ weight: "variable", subsets: ["latin"] })
 
@@ -84,7 +83,7 @@ export function RsvpButton({ eventId }: { eventId: number }) {
               return
             }
             setError(undefined)
-            await createEventAction(parsed.data)
+            await createEvent(parsed.data)
             setLocalSavedEvents(eventIdHidden)
             refreshEvents()
             setOpen(false)

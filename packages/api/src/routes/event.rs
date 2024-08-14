@@ -54,8 +54,6 @@ impl EventApi {
     async fn get_events(&self) -> GetEventsResponse {
         match events::Entity::find().find_with_related(attendees::Entity).all(&self.db).await {
             Ok(events) => {
-                println!("{:?}", events);
-
                 let events_mapped: Vec<EventDto> = events
                     .into_iter()
                     .map(|(event, attendees)| {

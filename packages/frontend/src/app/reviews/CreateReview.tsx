@@ -3,9 +3,8 @@
 import { useOptimistic, useState } from "react"
 import { z } from "zod"
 
-import { createReviewAction } from "@/app/actions"
+import { NewReview, Review, createReview } from "@/actions/reviews"
 import { components } from "@/client/schema"
-import { NewReview, Review } from "@/hooks/reviews"
 import { cn, formatDateTime } from "@/lib/utils"
 
 const inputReviewSchema = z.object({
@@ -84,7 +83,7 @@ export function CreateReview({ reviews }: { reviews: Review[] }) {
             }
             setError(undefined)
             addOptimisticReview(parsed.data)
-            await createReviewAction(parsed.data)
+            await createReview(parsed.data)
           }}
         >
           <div className="flex flex-col gap-4 rounded-md bg-neutral-800 px-4 py-3 shadow-md">

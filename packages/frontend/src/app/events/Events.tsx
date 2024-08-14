@@ -1,4 +1,4 @@
-import { EventDto } from "@/hooks/events"
+import { EventDto } from "@/actions/events"
 
 import { DiagonalLine, SingleEvent } from "./singleEvent"
 
