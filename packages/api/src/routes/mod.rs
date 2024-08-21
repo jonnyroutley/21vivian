@@ -1,6 +1,7 @@
 pub mod event;
 pub mod review;
 pub mod info;
+pub mod upload;
 
 use std::env;
 

@@ -142,13 +142,6 @@ export function NavButton() {
           </ul>
         </nav>
       </div>
-      <div
-        className={cn(
-          "invisible absolute right-0 top-0 h-96 w-96 -translate-y-48 translate-x-48 rounded-full bg-red-50 opacity-0 transition-opacity duration-200 lg:invisible",
-          showMenu && "visible opacity-100",
-        )}
-        style={{ background: colours.secondaryColour }}
-      />
       <button
         className="visible absolute right-8 top-8 z-10 h-12 w-12 rounded-full lg:invisible"
         style={{
@@ -173,8 +166,9 @@ export function NavButton() {
                   }}
                 >
                   <Link
-                    className="p-1 text-neutral-950 transition-colors duration-200"
+                    className="rounded-lg p-1 text-neutral-950 transition-colors duration-200"
                     href={item.href}
+                    style={{ background: colours.secondaryColour }}
                   >
                     {item.text}
                   </Link>
