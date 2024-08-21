@@ -65,14 +65,24 @@ export function SingleEvent({ event }: { event: components["schemas"]["EventDto"
         </span>{" "}
         {moment(event.starts_at).format("ddd, DD MMM")}
       </h2>
-      <div className="flex flex-col gap-4 border-t border-neutral-700 pt-3 text-neutral-50 md:flex-row">
-        <Image
-          src={"/bbq_pic.jpg"}
-          height={300}
-          width={400}
-          alt="fraser bbq"
-          className="w-full md:w-1/3"
-        />
+      <div className="flex flex-col gap-4 border-t border-neutral-700 pt-3 text-neutral-50 md:flex-row mb-4">
+        {event.id === 2 ? (
+          <Image
+            src={"/bbq_pic.jpg"}
+            height={300}
+            width={400}
+            alt="fraser bbq"
+            className="w-full md:w-1/3"
+          />
+        ) : (
+          <Image
+            src={"/allPointsEast.webp"}
+            height={300}
+            width={400}
+            alt="all points east"
+            className="w-full md:w-1/3"
+          />
+        )}
         <div className="flex w-full flex-col gap-2">
           <h3 className="text-2xl tracking-wide">{event.name}</h3>
           <h4 className="font-sans">{event.description}</h4>

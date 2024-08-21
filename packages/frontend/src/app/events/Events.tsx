@@ -19,7 +19,6 @@ export function Events({ events }: { events: EventDto[] }) {
           </div>
         </div> */}
       </div>
-
       {events
         .sort((a, b) => new Date(b.starts_at).valueOf() - new Date(a.starts_at).valueOf())
         .map((event) => (
