@@ -8,6 +8,7 @@ tags:
 - name: Event
 - name: Info
 - name: Review
+- name: Upload
 paths:
   /reviews:
     post:
@@ -72,6 +73,19 @@ paths:
       responses:
         '200':
           description: Returns a list of the events
+        '500':
+          description: Likely an issue with the database connection.
+  /upload/presigned-link:
+    get:
+      tags:
+      - Upload
+      responses:
+        '200':
+          description: Returns a list of the events
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/PresignedLinkDto'
         '500':
           description: Likely an issue with the database connection.
   /info:
@@ -171,6 +185,13 @@ components:
         stars:
           type: integer
           format: int32
+    PresignedLinkDto:
+      type: object
+      required:
+      - presigned_link
+      properties:
+        presigned_link:
+          type: string
     Review:
       type: object
       required:

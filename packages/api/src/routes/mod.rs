@@ -6,12 +6,15 @@ pub mod upload;
 use std::env;
 use std::sync::Arc;
 
+use aws_sdk_s3::Client;
 use chrono::{ DateTime, Utc };
 use poem::Route;
 use poem_openapi::{ OpenApi, OpenApiService, Webhook };
 use sea_orm::DatabaseConnection;
 use std::fs::File;
 use std::io::Write;
+
+use crate::services::upload_service::S3Service;
 
 pub fn save_spec_to_file(yaml: String, path: &String) -> std::io::Result<()> {
     let mut file = File::create(path)?;
@@ -28,7 +31,11 @@ pub fn save_spec<T: OpenApi, W: Webhook>(service: &OpenApiService<T, W>) {
     }
 }
 
-pub fn app_routes(db: Arc<DatabaseConnection>, startup_time: DateTime<Utc>) -> Route {
+pub fn app_routes(
+    db: Arc<DatabaseConnection>,
+    startup_time: DateTime<Utc>,
+    s3_service: S3Service
+) -> Route {
     let api_base_url = match env::var("API_BASE_URL") {
         Ok(e) => e.to_string(),
         Err(_) => panic!("Fail to get API_BASE_URL variable"),
@@ -37,6 +44,7 @@ pub fn app_routes(db: Arc<DatabaseConnection>, startup_time: DateTime<Utc>) -> R
     let all_routes = (
         review::ReviewApi { db: Arc::clone(&db) },
         event::EventApi { db: Arc::clone(&db) },
+        upload::UploadApi { db: Arc::clone(&db), s3_service },
         info::InfoApi { startup_time },
     );
     let api_service = OpenApiService::new(all_routes, "API", "1.0").server(

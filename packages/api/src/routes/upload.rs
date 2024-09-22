@@ -1,79 +1,49 @@
-// use std::{ error::Error, time::Duration };
+use std::sync::Arc;
 
-// use aws_sdk_s3::{ presigning::PresigningConfig, Client };
-// use poem_openapi::{ payload::Json, OpenApi, Tags, Object, ApiResponse };
-// use sea_orm::DatabaseConnection;
+use poem_openapi::{ payload::Json, OpenApi, Tags, Object, ApiResponse };
+use sea_orm::DatabaseConnection;
+use crate::services::upload_service::S3Service;
 
-// async fn get_object(
-//     client: &Client,
-//     bucket: &str,
-//     object: &str,
-//     expires_in: u64
-// ) -> Result<(), Box<dyn Error>> {
-//     let expires_in = Duration::from_secs(expires_in);
-//     let presigned_request = client
-//         .get_object()
-//         .bucket(bucket)
-//         .key(object)
-//         .presigned(PresigningConfig::expires_in(expires_in)?).await?;
+#[derive(Tags)]
+enum ApiTags {
+    Upload,
+}
 
-//     println!("Object URI: {}", presigned_request.uri());
+pub struct UploadApi {
+    pub db: Arc<DatabaseConnection>,
+    pub s3_service: S3Service,
+}
 
-//     Ok(())
-// }
+#[derive(Clone, PartialEq, Eq, Debug, Object)]
+struct PresignedLinkDto {
+    pub presigned_link: String,
+}
 
-// async fn put_object(
-//     client: &Client,
-//     bucket: &str,
-//     object: &str,
-//     expires_in: u64
-// ) -> Result<(), Box<dyn Error>> {
-//     let expires_in = Duration::from_secs(expires_in);
+#[derive(Object)]
+pub struct ErrorMessage {
+    message: String,
+}
 
-//     let presigned_request = client
-//         .put_object()
-//         .bucket(bucket)
-//         .key(object)
-//         .presigned(PresigningConfig::expires_in(expires_in)?).await?;
+#[derive(ApiResponse)]
+enum GetUploadLinkResponse {
+    /// Returns a list of the events
+    #[oai(status = 200)]
+    Ok(Json<PresignedLinkDto>),
+    /// Likely an issue with the database connection.
+    #[oai(status = 500)]
+    InternalServerError,
+}
 
-//     println!("Object URI: {}", presigned_request.uri());
-
-//     Ok(())
-// }
-
-// #[derive(Tags)]
-// enum ApiTags {
-//     Upload,
-// }
-
-// pub struct EventApi {
-//     pub db: DatabaseConnection,
-// }
-
-// #[derive(Clone, PartialEq, Eq, Debug, Object)]
-// struct PresignedLinkDto {
-//     pub presigned_link: String,
-// }
-
-// #[derive(Object)]
-// pub struct ErrorMessage {
-//     message: String,
-// }
-
-// #[derive(ApiResponse)]
-// enum GetUploadLinkResponse {
-//     /// Returns a list of the events
-//     #[oai(status = 200)]
-//     Ok(Json<PresignedLinkDto>),
-//     /// Likely an issue with the database connection.
-//     #[oai(status = 500)]
-//     InternalServerError,
-// }
-
-// #[OpenApi]
-// impl EventApi {
-//     #[oai(path = "/upload/presigned-link", method = "get", tag = "ApiTags::Upload")]
-//     async fn get_presigned_link(&self) -> GetUploadLinkResponse {
-//         GetUploadLinkResponse
-//     }
-// }
+#[OpenApi]
+impl UploadApi {
+    #[oai(path = "/upload/presigned-link", method = "get", tag = "ApiTags::Upload")]
+    async fn get_presigned_uri(&self) -> GetUploadLinkResponse {
+        match self.s3_service.get_presigned_uri("test", "test", 60 * 5).await {
+            Ok(link) => GetUploadLinkResponse::Ok(Json(PresignedLinkDto { presigned_link: link })),
+            Err(e) => {
+                println!("{e}");
+                GetUploadLinkResponse::InternalServerError
+            }
+        }
+    }
+}
