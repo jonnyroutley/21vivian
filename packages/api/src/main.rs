@@ -1,4 +1,4 @@
-use std::env;
+use std::{ env, sync::Arc };
 
 use chrono::Utc;
 use migration::{ Migrator, MigratorTrait };
@@ -33,10 +33,9 @@ async fn main() -> Result<(), std::io::Error> {
     Migrator::up(&db, None).await.unwrap();
 
     let startup_time = Utc::now();
-    let app = routes::app_routes(db, startup_time);
+    let app = routes::app_routes(Arc::new(db), startup_time);
 
     let api_base_url = env::var("API_BASE_URL").unwrap();
-    // let api_base_url = "127.0.0.1:8000";
 
     Server::new(TcpListener::bind(api_base_url)).run(app.with(Cors::new())).await
 }

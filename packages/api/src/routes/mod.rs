@@ -4,6 +4,7 @@ pub mod info;
 pub mod upload;
 
 use std::env;
+use std::sync::Arc;
 
 use chrono::{ DateTime, Utc };
 use poem::Route;
@@ -27,15 +28,15 @@ pub fn save_spec<T: OpenApi, W: Webhook>(service: &OpenApiService<T, W>) {
     }
 }
 
-pub fn app_routes(db: DatabaseConnection, startup_time: DateTime<Utc>) -> Route {
+pub fn app_routes(db: Arc<DatabaseConnection>, startup_time: DateTime<Utc>) -> Route {
     let api_base_url = match env::var("API_BASE_URL") {
         Ok(e) => e.to_string(),
         Err(_) => panic!("Fail to get API_BASE_URL variable"),
     };
 
     let all_routes = (
-        review::ReviewApi { db: db.clone() },
-        event::EventApi { db: db.clone() },
+        review::ReviewApi { db: Arc::clone(&db) },
+        event::EventApi { db: Arc::clone(&db) },
         info::InfoApi { startup_time },
     );
     let api_service = OpenApiService::new(all_routes, "API", "1.0").server(

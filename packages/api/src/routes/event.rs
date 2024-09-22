@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use chrono::NaiveDateTime;
 use poem_openapi::{ payload::Json, OpenApi, Tags, Object, ApiResponse };
 use sea_orm::{ EntityTrait, DatabaseConnection, Set, ActiveModelTrait };
@@ -9,7 +11,7 @@ enum ApiTags {
 }
 
 pub struct EventApi {
-    pub db: DatabaseConnection,
+    pub db: Arc<DatabaseConnection>,
 }
 
 #[derive(Clone, PartialEq, Eq, Debug, Object)]
@@ -52,7 +54,7 @@ enum CreateAttendeeResponse {
 impl EventApi {
     #[oai(path = "/events", method = "get", tag = "ApiTags::Event")]
     async fn get_events(&self) -> GetEventsResponse {
-        match events::Entity::find().find_with_related(attendees::Entity).all(&self.db).await {
+        match events::Entity::find().find_with_related(attendees::Entity).all(&*self.db).await {
             Ok(events) => {
                 let events_mapped: Vec<EventDto> = events
                     .into_iter()
@@ -89,7 +91,7 @@ impl EventApi {
             ..Default::default()
         };
 
-        match attendee.insert(&self.db).await {
+        match attendee.insert(self.db.as_ref()).await {
             Ok(_) => println!("Attendee added to event {}", create_attendee.event_id),
             Err(err) => {
                 println!("Error persisting attendee:\n{:?}", err);

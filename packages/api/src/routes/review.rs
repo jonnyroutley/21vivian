@@ -1,6 +1,7 @@
 use poem_openapi::{ payload::Json, ApiResponse, Object, OpenApi, Tags };
 use entity::reviews;
 use sea_orm::{ ActiveModelTrait, EntityTrait, Set, DatabaseConnection };
+use std::sync::Arc;
 
 #[derive(Tags)]
 enum ApiTags {
@@ -8,7 +9,7 @@ enum ApiTags {
 }
 
 pub struct ReviewApi {
-    pub db: DatabaseConnection,
+    pub db: Arc<DatabaseConnection>,
 }
 
 #[derive(ApiResponse)]
@@ -67,7 +68,7 @@ impl ReviewApi {
             ..Default::default()
         };
 
-        match review.insert(&self.db).await {
+        match review.insert(&*self.db).await {
             Ok(_) => println!("Review persisted successfully"),
             Err(err) => {
                 println!("Error persisting review:\n{:?}", err);
@@ -82,7 +83,7 @@ impl ReviewApi {
     async fn get_all(
         &self,
     ) -> GetReviewsResponse {
-        match reviews::Entity::find().all(&self.db).await {
+        match reviews::Entity::find().all(&*self.db).await {
             Ok(reviews) => return GetReviewsResponse::Ok(Json(reviews)),
             Err(e) => {
                 print!("{:?}", e);
