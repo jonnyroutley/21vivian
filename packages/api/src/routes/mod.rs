@@ -6,7 +6,6 @@ pub mod upload;
 use std::env;
 use std::sync::Arc;
 
-use aws_sdk_s3::Client;
 use chrono::{ DateTime, Utc };
 use poem::Route;
 use poem_openapi::{ OpenApi, OpenApiService, Webhook };

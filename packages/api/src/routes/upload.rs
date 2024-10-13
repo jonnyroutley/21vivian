@@ -38,10 +38,10 @@ enum GetUploadLinkResponse {
 impl UploadApi {
     #[oai(path = "/upload/presigned-link", method = "get", tag = "ApiTags::Upload")]
     async fn get_presigned_uri(&self) -> GetUploadLinkResponse {
-        match self.s3_service.get_presigned_uri("test", "test", 60 * 5).await {
+        match self.s3_service.get_presigned_uri("21vivian-bucket", "test.txt", 60 * 5).await {
             Ok(link) => GetUploadLinkResponse::Ok(Json(PresignedLinkDto { presigned_link: link })),
             Err(e) => {
-                println!("{e}");
+                println!("{:?}", e);
                 GetUploadLinkResponse::InternalServerError
             }
         }

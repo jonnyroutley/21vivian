@@ -1,5 +1,6 @@
 use std::{ env, sync::Arc };
 
+use aws_config::{ meta::region::RegionProviderChain, Region };
 use aws_sdk_s3::Client;
 use chrono::Utc;
 use migration::{ Migrator, MigratorTrait };
