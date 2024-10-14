@@ -4,7 +4,7 @@ import { DiagonalLine, SingleEvent } from "./singleEvent"
 
 export function Events({ events }: { events: EventDto[] }) {
   return (
-    <div className="flex w-full max-w-3xl flex-col gap-2 px-4 md:px-0">
+    <div className="mb-32 flex w-full max-w-3xl flex-col gap-2 px-4 md:px-0">
       <div className="flex w-full items-center justify-between">
         <h1 className="inline-flex items-baseline gap-2 text-4xl uppercase text-ra_red">
           <span className="h-6 w-6">

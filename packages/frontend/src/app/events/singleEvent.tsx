@@ -65,7 +65,7 @@ export function SingleEvent({ event }: { event: components["schemas"]["EventDto"
         </span>{" "}
         {moment(event.starts_at).format("ddd, DD MMM")}
       </h2>
-      <div className="flex flex-col gap-4 border-t border-neutral-700 pt-3 text-neutral-50 md:flex-row mb-4">
+      <div className="mb-4 flex flex-col gap-4 border-t border-neutral-700 pt-3 text-neutral-50 md:flex-row">
         {event.id === 2 ? (
           <Image
             src={"/bbq_pic.jpg"}
@@ -94,7 +94,7 @@ export function SingleEvent({ event }: { event: components["schemas"]["EventDto"
             <div className="group flex items-center gap-2 p-1 hover:bg-neutral-800">
               <AttendeesIcon /> {event.attendees.length}
               {event.attendees.length > 0 && (
-                <ul className="peer invisible absolute left-[50%] z-10 bg-neutral-800 px-8 py-6 group-hover:visible lg:left-[75%]">
+                <ul className="peer invisible absolute left-0 right-0 top-[50%] z-10 mx-auto w-64 bg-neutral-800 px-8 py-6 group-hover:visible lg:left-[75%]">
                   {event.attendees.map((attendee) => (
                     <li key={attendee.id}>{attendee.name}</li>
                   ))}

@@ -89,7 +89,7 @@ export function NavButton() {
     <>
       <div
         className={cn(
-          "invisible absolute right-8 top-8 h-12 w-12 rounded-full font-mono md:h-16 md:w-16 lg:visible",
+          "invisible absolute right-8 top-8 h-12 w-12 rounded-full font-mono md:h-16 md:w-16 lg:visible lg:",
         )}
         style={{
           transform: `translate(${translateX}px, ${translateY}px)`,
@@ -133,6 +133,7 @@ export function NavButton() {
                     className="p-1 transition-colors duration-200"
                     href={item.href}
                     style={{ color: colours.textColour }}
+                    onClick={() => setShowMenu(!showMenu)}
                   >
                     {item.text}
                   </Link>
@@ -169,6 +170,7 @@ export function NavButton() {
                     className="rounded-lg p-1 text-neutral-950 transition-colors duration-200"
                     href={item.href}
                     style={{ background: colours.secondaryColour }}
+                    onClick={() => setShowMenu(!showMenu)}
                   >
                     {item.text}
                   </Link>
