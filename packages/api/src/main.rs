@@ -1,11 +1,10 @@
 use std::{ env, sync::Arc };
 
-use aws_sdk_s3::Client;
 use chrono::Utc;
 use migration::{ Migrator, MigratorTrait };
 use poem::{ listener::TcpListener, Server, middleware::Cors, EndpointExt };
 use sea_orm::{ Database, DatabaseConnection, DbErr };
-use services::upload_service::S3Service;
+use services::{ notification_service::PushsaferService, upload_service::S3Service };
 
 mod routes;
 pub mod services;
@@ -38,8 +37,12 @@ async fn main() -> Result<(), std::io::Error> {
 
     let shared_config = aws_config::load_from_env().await;
 
-    let client = Client::new(&shared_config);
-    let s3_service = S3Service::new(client);
+    let s3_client = aws_sdk_s3::Client::new(&shared_config);
+    let s3_service = S3Service::new(s3_client);
+
+    let pushsafer_client = reqwest::Client::new();
+    let pushsafer_service = PushsaferService::new(pushsafer_client);
+    let _ = pushsafer_service.send_notification("Test", "Welcome").await;
 
     let startup_time = Utc::now();
     let app = routes::app_routes(Arc::new(db), startup_time, s3_service);
