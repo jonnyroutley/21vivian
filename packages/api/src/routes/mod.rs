@@ -13,6 +13,7 @@ use sea_orm::DatabaseConnection;
 use std::fs::File;
 use std::io::Write;
 
+use crate::services::notification_service::PushsaferService;
 use crate::services::upload_service::S3Service;
 
 pub fn save_spec_to_file(yaml: String, path: &String) -> std::io::Result<()> {
@@ -33,7 +34,8 @@ pub fn save_spec<T: OpenApi, W: Webhook>(service: &OpenApiService<T, W>) {
 pub fn app_routes(
     db: Arc<DatabaseConnection>,
     startup_time: DateTime<Utc>,
-    s3_service: S3Service
+    s3_service: S3Service,
+    pushsafer_service: PushsaferService
 ) -> Route {
     let api_base_url = match env::var("API_BASE_URL") {
         Ok(e) => e.to_string(),
@@ -41,7 +43,7 @@ pub fn app_routes(
     };
 
     let all_routes = (
-        review::ReviewApi { db: Arc::clone(&db) },
+        review::ReviewApi { db: Arc::clone(&db), pushsafer_service },
         event::EventApi { db: Arc::clone(&db) },
         upload::UploadApi { db: Arc::clone(&db), s3_service },
         info::InfoApi { startup_time },

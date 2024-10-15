@@ -3,6 +3,7 @@
     "chrono",
     "dotenvy",
     "openapi",
-    "PUSHSAFER"
+    "PUSHSAFER",
+    "reqwest"
   ]
 }

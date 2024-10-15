@@ -3,6 +3,8 @@ use entity::reviews;
 use sea_orm::{ ActiveModelTrait, EntityTrait, Set, DatabaseConnection };
 use std::sync::Arc;
 
+use crate::services::notification_service::PushsaferService;
+
 #[derive(Tags)]
 enum ApiTags {
     Review,
@@ -10,6 +12,7 @@ enum ApiTags {
 
 pub struct ReviewApi {
     pub db: Arc<DatabaseConnection>,
+    pub pushsafer_service: PushsaferService,
 }
 
 #[derive(ApiResponse)]
@@ -27,7 +30,7 @@ enum CreateReviewResponse {
 
 #[derive(Object)]
 pub struct ErrorMessage {
-    message: String
+    message: String,
 }
 
 #[derive(ApiResponse)]
@@ -42,7 +45,7 @@ enum GetReviewsResponse {
 
 fn validate_stars(stars: i32) -> Result<(), ErrorMessage> {
     if stars < 0 || stars > 5 {
-        return Err(ErrorMessage{message: "Stars must be between 0 and 5".to_string()});
+        return Err(ErrorMessage { message: "Stars must be between 0 and 5".to_string() });
     }
     Ok(())
 }
@@ -56,7 +59,9 @@ impl ReviewApi {
     ) -> CreateReviewResponse {
         match validate_stars(create_review.stars) {
             Ok(_) => (),
-            Err(error) => { return CreateReviewResponse::BadRequest(Json(error)); }
+            Err(error) => {
+                return CreateReviewResponse::BadRequest(Json(error));
+            }
         }
 
         let review = reviews::ActiveModel {
@@ -76,15 +81,21 @@ impl ReviewApi {
             }
         }
 
+        let _ = self.pushsafer_service.send_notification(
+            "New review!",
+            &format!("See what {} had to say...", create_review.name),
+            "https://21vivian.com/reviews"
+        ).await;
+
         CreateReviewResponse::Ok
     }
 
     #[oai(path = "/reviews", method = "get", tag = "ApiTags::Review")]
-    async fn get_all(
-        &self,
-    ) -> GetReviewsResponse {
+    async fn get_all(&self) -> GetReviewsResponse {
         match reviews::Entity::find().all(&*self.db).await {
-            Ok(reviews) => return GetReviewsResponse::Ok(Json(reviews)),
+            Ok(reviews) => {
+                return GetReviewsResponse::Ok(Json(reviews));
+            }
             Err(e) => {
                 print!("{:?}", e);
                 return GetReviewsResponse::InternalServerError;

@@ -42,10 +42,9 @@ async fn main() -> Result<(), std::io::Error> {
 
     let pushsafer_client = reqwest::Client::new();
     let pushsafer_service = PushsaferService::new(pushsafer_client);
-    let _ = pushsafer_service.send_notification("Test", "Welcome").await;
 
     let startup_time = Utc::now();
-    let app = routes::app_routes(Arc::new(db), startup_time, s3_service);
+    let app = routes::app_routes(Arc::new(db), startup_time, s3_service, pushsafer_service);
 
     let api_base_url = env::var("API_BASE_URL").unwrap();
 
