@@ -3,7 +3,7 @@ use entity::reviews;
 use sea_orm::{ ActiveModelTrait, EntityTrait, Set, DatabaseConnection };
 use std::sync::Arc;
 
-use crate::services::notification_service::PushsaferService;
+use crate::services::notification_service::{ NotificationBuilder, PushsaferService };
 
 #[derive(Tags)]
 enum ApiTags {
@@ -81,11 +81,14 @@ impl ReviewApi {
             }
         }
 
-        let _ = self.pushsafer_service.send_notification(
-            "New review!",
-            &format!("See what {} had to say...", create_review.name),
-            "https://21vivian.com/reviews"
-        ).await;
+        let notification = NotificationBuilder::new(
+            String::from("New review!"),
+            format!("See what '{}' had to say...", create_review.name)
+        )
+            .url(String::from("https://21vivian.com/reviews"))
+            .build();
+
+        let _ = self.pushsafer_service.send_notification(notification).await;
 
         CreateReviewResponse::Ok
     }
