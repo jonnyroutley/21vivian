@@ -10,17 +10,15 @@ export default async function CreateEventPage() {
     <main
       className={`flex min-h-screen w-full flex-col items-center bg-neutral-950 pt-8 font-sans text-neutral-50 ${leagueGothic.className}`}
     >
-      <div className="flex w-full max-w-3xl flex-col gap-2 px-4 md:px-0">
-        <div className="flex w-full flex-col items-start justify-between">
+      <div className="flex w-full max-w-lg flex-col gap-2 px-4 md:px-0">
+        <div className="flex w-full flex-col items-center justify-between">
           <h1 className="inline-flex items-baseline gap-2 text-4xl uppercase text-ra_red">
             <span className="h-6 w-6">
               <DiagonalLine />
             </span>{" "}
             Create event
           </h1>
-          <div className="">
-            <CreateEventForm />
-          </div>
+          <CreateEventForm />
         </div>
       </div>
     </main>

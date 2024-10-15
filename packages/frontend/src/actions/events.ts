@@ -7,10 +7,9 @@ import { config } from "@/lib/config"
 import { components, paths } from "../client/schema"
 
 export type EventDto = components["schemas"]["EventDto"]
-export type NewAttendee = components["schemas"]["AttendeeInputModel"]
 
 export type CreateEvent =
-  paths["/events/attendee"]["post"]["requestBody"]["content"]["application/json; charset=utf-8"]
+  paths["/events"]["post"]["requestBody"]["content"]["application/json; charset=utf-8"]
 
 export async function createEvent(eventData: CreateEvent) {
   await fetch(`${config.apiBaseUrl}/events/attendee`, {

@@ -38,7 +38,7 @@ pub fn app_routes(
     pushsafer_service: PushsaferService
 ) -> Route {
     let api_base_url = match env::var("API_BASE_URL") {
-        Ok(e) => e.to_string(),
+        Ok(url) => url.to_string(),
         Err(_) => panic!("Fail to get API_BASE_URL variable"),
     };
 

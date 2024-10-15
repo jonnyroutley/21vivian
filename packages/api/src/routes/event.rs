@@ -40,8 +40,19 @@ enum GetEventsResponse {
     InternalServerError,
 }
 
+
 #[derive(ApiResponse)]
 enum CreateAttendeeResponse {
+    /// Returns a list of the events
+    #[oai(status = 200)]
+    Ok,
+    /// Likely an issue with the database connection.
+    #[oai(status = 500)]
+    InternalServerError,
+}
+
+#[derive(ApiResponse)]
+enum CreateEventResponse {
     /// Returns a list of the events
     #[oai(status = 200)]
     Ok,
@@ -78,6 +89,30 @@ impl EventApi {
                 return GetEventsResponse::InternalServerError;
             }
         }
+    }
+
+    #[oai(path = "/events", method = "post", tag = "ApiTags::Event")]
+    async fn create_event(&self,
+        Json(create_event): Json<events::EventInputModel>
+    ) -> CreateEventResponse {
+        let event = events::ActiveModel {
+            name: Set(create_event.name),
+            description: Set(create_event.description),
+            location: Set(create_event.location),
+            starts_at: Set(create_event.starts_at),
+            ends_at: Set(create_event.ends_at),
+            ..Default::default()
+        };
+
+        match event.insert(&*self.db).await {
+            Ok(_) => println!("Event successfully created"),
+            Err(e) => {
+                print!("Failed to get events with error: {:?}", e);
+                return CreateEventResponse::InternalServerError;
+            }
+        }
+
+        CreateEventResponse::Ok
     }
 
     #[oai(path = "/events/attendee", method = "post", tag = "ApiTags::Event")]

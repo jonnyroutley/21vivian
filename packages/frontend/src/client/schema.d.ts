@@ -118,7 +118,35 @@ export interface paths {
             };
         };
         put?: never;
-        post?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json; charset=utf-8": components["schemas"]["EventInputModel"];
+                };
+            };
+            responses: {
+                /** @description Returns a list of the events */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Likely an issue with the database connection. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -163,6 +191,48 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/upload/presigned-link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Returns a list of the events */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["PresignedLinkDto"];
+                    };
+                };
+                /** @description Likely an issue with the database connection. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -237,12 +307,24 @@ export interface components {
             ends_at: string;
             attendees: components["schemas"]["Attendee"][];
         };
+        EventInputModel: {
+            name: string;
+            location: string;
+            description: string;
+            /** Format: naive-date-time */
+            starts_at: string;
+            /** Format: naive-date-time */
+            ends_at: string;
+        };
         InputModel: {
             name: string;
             title: string;
             description: string;
             /** Format: int32 */
             stars: number;
+        };
+        PresignedLinkDto: {
+            presigned_link: string;
         };
         Review: {
             /** Format: int32 */

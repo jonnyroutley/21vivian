@@ -60,6 +60,20 @@ paths:
                   $ref: '#/components/schemas/EventDto'
         '500':
           description: Likely an issue with the database connection.
+    post:
+      tags:
+      - Event
+      requestBody:
+        content:
+          application/json; charset=utf-8:
+            schema:
+              $ref: '#/components/schemas/EventInputModel'
+        required: true
+      responses:
+        '200':
+          description: Returns a list of the events
+        '500':
+          description: Likely an issue with the database connection.
   /events/attendee:
     post:
       tags:
@@ -168,6 +182,27 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Attendee'
+    EventInputModel:
+      type: object
+      required:
+      - name
+      - location
+      - description
+      - starts_at
+      - ends_at
+      properties:
+        name:
+          type: string
+        location:
+          type: string
+        description:
+          type: string
+        starts_at:
+          type: string
+          format: naive-date-time
+        ends_at:
+          type: string
+          format: naive-date-time
     InputModel:
       type: object
       required:

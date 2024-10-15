@@ -20,7 +20,7 @@ pub struct Model {
 }
 
 #[derive(Object, Debug)]
-pub struct InputModel {
+pub struct EventInputModel {
     pub name: String,
     pub location: String,
     pub description: String,

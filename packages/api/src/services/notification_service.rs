@@ -7,21 +7,34 @@ pub struct PushsaferService {
     client: Client,
 }
 
-#[derive(Serialize)]
-pub struct PushsaferMessage {
-    k: Option<String>, // Your private or alias key
+pub struct Notification {
     m: String, // The message you want to send
     t: String, // The title of the notification
     u: Option<String>, // url link
 }
 
-impl PushsaferMessage {
+#[derive(Serialize)]
+struct PushsaferMessageInternal {
+    k: String, // Your private or alias key
+    m: String, // The message you want to send
+    t: String, // The title of the notification
+    u: Option<String>, // url link
+}
+
+impl PushsaferMessageInternal {
+    pub fn from_public(message: Notification, key: String) -> PushsaferMessageInternal {
+        PushsaferMessageInternal {
+            k: key,
+            m: message.m,
+            t: message.t,
+            u: message.u
+        }
+    }
+}
+
+impl Notification {
     pub fn builder() -> NotificationBuilder {
         NotificationBuilder::default()
-    }
-
-    pub fn set_key(&mut self, key: String) {
-        self.k = Some(key);
     }
 }
 
@@ -46,9 +59,8 @@ impl NotificationBuilder {
         self
     }
 
-    pub fn build(self) -> PushsaferMessage {
-        PushsaferMessage {
-            k: None,
+    pub fn build(self) -> Notification {
+        Notification {
             m: self.m,
             t: self.t,
             u: self.u,
@@ -65,13 +77,13 @@ impl PushsaferService {
 
     pub async fn send_notification(
         &self,
-        mut pushsafer_message: PushsaferMessage
+        pushsafer_message: Notification
     ) -> Result<(), Box<dyn std::error::Error>> {
         let pushsafer_key = env::var("PUSHSAFER_KEY").expect("PUSHSAFER_KEY not found");
 
-        pushsafer_message.set_key(pushsafer_key);
+        let internal_message = PushsaferMessageInternal::from_public(pushsafer_message, pushsafer_key);
 
-        let response = match self.client.post(PUSHSAFER_URL).form(&pushsafer_message).send().await {
+        let response = match self.client.post(PUSHSAFER_URL).form(&internal_message).send().await {
             Ok(result) => result,
             Err(e) => {
                 return Err(Box::new(e));
