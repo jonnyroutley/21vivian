@@ -1,6 +1,6 @@
 "use client"
 
-import { useOptimistic, useState } from "react"
+import { useOptimistic, useRef, useState } from "react"
 import { z } from "zod"
 
 import { NewReview, Review, createReview } from "@/actions/reviews"
@@ -45,6 +45,7 @@ function ReviewRow({
 }
 
 export function CreateReview({ reviews }: { reviews: Review[] }) {
+  const ref = useRef<HTMLFormElement>(null)
   const [error, setError] = useState<string>()
   const [optimisticReviews, addOptimisticReview] = useOptimistic<Review[], NewReview>(
     reviews,
@@ -63,6 +64,7 @@ export function CreateReview({ reviews }: { reviews: Review[] }) {
     <>
       <div>
         <form
+          ref={ref}
           className="flex flex-col gap-4"
           action={async (formData: FormData) => {
             const name = formData.get("name")
@@ -84,6 +86,7 @@ export function CreateReview({ reviews }: { reviews: Review[] }) {
             setError(undefined)
             addOptimisticReview(parsed.data)
             await createReview(parsed.data)
+            ref.current?.reset()
           }}
         >
           <div className="flex flex-col gap-4 rounded-md bg-neutral-800 px-4 py-3 shadow-md">
