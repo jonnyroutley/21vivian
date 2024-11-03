@@ -5,6 +5,7 @@ use migration::{ Migrator, MigratorTrait };
 use poem::{ listener::TcpListener, Server, middleware::Cors, EndpointExt };
 use sea_orm::{ Database, DatabaseConnection, DbErr };
 use services::{ notification_service::PushsaferService, upload_service::S3Service };
+use tracing_subscriber::{ fmt::format::FmtSpan, EnvFilter };
 
 mod routes;
 pub mod services;
@@ -26,6 +27,20 @@ async fn setup() -> Result<DatabaseConnection, DbErr> {
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
+    // Initialize the logging subscriber
+    tracing_subscriber
+        ::fmt()
+        // Log all requests with INFO level or higher
+        .with_env_filter(EnvFilter::from("info"))
+        // Log the request START, RESPONSE details, and any ERRORS
+        .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
+        // Format timestamps for readability
+        .with_target(false)
+        .with_thread_ids(true)
+        .with_line_number(true)
+        .with_file(true)
+        .init();
+
     match dotenvy::dotenv() {
         Ok(_) => println!("dotenv loaded"),
         Err(e) => panic!("Couldn't load dotenv ({})", e),
