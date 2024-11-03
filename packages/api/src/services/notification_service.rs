@@ -1,10 +1,11 @@
-use std::env;
+use std::{ collections::HashMap, env };
 
 use reqwest::Client;
 use serde::Serialize;
 
 pub struct PushsaferService {
     client: Client,
+    templates: HashMap<String, NotificationTemplate>,
 }
 
 pub struct Notification {
@@ -27,7 +28,7 @@ impl PushsaferMessageInternal {
             k: key,
             m: message.m,
             t: message.t,
-            u: message.u
+            u: message.u,
         }
     }
 }
@@ -70,9 +71,44 @@ impl NotificationBuilder {
 
 const PUSHSAFER_URL: &str = "https://www.pushsafer.com/api";
 
+struct NotificationTemplate {
+    title: String,
+    message: String,
+}
+
 impl PushsaferService {
     pub fn new(client: Client) -> Self {
-        Self { client }
+        let mut templates = HashMap::new();
+        templates.insert("dinner".to_string(), NotificationTemplate {
+            title: "Dinner time".to_string(),
+            message: "No dilly-dallying".to_string(),
+        });
+        templates.insert("sexy".to_string(), NotificationTemplate {
+            title: "Mr Sexy in da house".to_string(),
+            message: "meooow".to_string(),
+        });
+        templates.insert("dave".to_string(), NotificationTemplate {
+            title: "Dave is here!".to_string(),
+            message: "".to_string(),
+        });
+        templates.insert("pints".to_string(), NotificationTemplate {
+            title: "Pint time".to_string(),
+            message: "It's 5 o'clock somewhere".to_string(),
+        });
+        templates.insert("girlfriend".to_string(), NotificationTemplate {
+            title: "Girlfriend alert !".to_string(),
+            message: "Tops off fellas!".to_string(),
+        });
+        templates.insert("summers".to_string(), NotificationTemplate {
+            title: "Summers family alert !".to_string(),
+            message: "Tops on fellas!".to_string(),
+        });
+
+        Self { client, templates }
+    }
+
+    fn get_template(&self, template_name: &str) -> Option<&NotificationTemplate> {
+        self.templates.get(template_name)
     }
 
     pub async fn send_notification(
@@ -81,7 +117,10 @@ impl PushsaferService {
     ) -> Result<(), Box<dyn std::error::Error>> {
         let pushsafer_key = env::var("PUSHSAFER_KEY").expect("PUSHSAFER_KEY not found");
 
-        let internal_message = PushsaferMessageInternal::from_public(pushsafer_message, pushsafer_key);
+        let internal_message = PushsaferMessageInternal::from_public(
+            pushsafer_message,
+            pushsafer_key
+        );
 
         let response = match self.client.post(PUSHSAFER_URL).form(&internal_message).send().await {
             Ok(result) => result,
@@ -97,5 +136,22 @@ impl PushsaferService {
         }
 
         Ok(())
+    }
+
+    pub async fn send_template_notification(&self, template_name: &str) -> Result<(), String> {
+        match self.get_template(template_name) {
+            Some(template) => {
+                println!("Sending notification: {}", template.title);
+
+                let notification = NotificationBuilder::new(
+                    template.title.clone(),
+                    template.message.clone()
+                ).build();
+
+                let _ = self.send_notification(notification).await;
+                Ok(())
+            }
+            None => Err(format!("Template '{}' not found", template_name)),
+        }
     }
 }

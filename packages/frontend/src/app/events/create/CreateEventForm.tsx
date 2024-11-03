@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { z } from "zod"
+import { set, z } from "zod"
 
 import { createEvent } from "@/actions/events"
 import { components } from "@/client/schema"
@@ -11,17 +11,16 @@ const createEventSchema = z.object({
   name: z.string().min(1, "Please enter a name"),
   location: z.string().min(1, "Please enter a location"),
   description: z.string().min(1, "Please enter a description"),
-  // starts_at: z.string().datetime({ message: "Start should be a valid date time" }),
-  // ends_at: z.string().datetime({ message: "End should be a valid date time" }),
   starts_at: z.coerce
     .date({ message: "Start should be a valid date time" })
     .transform((date) => date.toISOString()),
   ends_at: z.coerce
     .date({ message: "End should be a valid date time" })
     .transform((date) => date.toISOString()),
+  image_id: z.number(),
 })
 
-const uploadImage = async (file: File) => {
+const uploadImage = async (file: File, setImageId: (image_id: number) => void) => {
   const getPresignedUrlResponse = await fetch(`${config.apiBaseUrl}/upload/presigned-link`)
   if (getPresignedUrlResponse.status !== 200) {
     // Do something
@@ -43,6 +42,8 @@ const uploadImage = async (file: File) => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
+    console.log(response)
+    setImageId(1)
 
     console.log("File uploaded successfully")
     return true
@@ -55,7 +56,7 @@ const uploadImage = async (file: File) => {
 export function CreateEventForm() {
   const formRef = useRef<HTMLFormElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const uploadFileId = useState<null | string>(null)
+  const [uploadFileId, setUploadFileId] = useState<number>()
 
   const [error, setError] = useState<string>()
   return (
@@ -67,12 +68,14 @@ export function CreateEventForm() {
         const description = formData.get("description")
         const starts_at = formData.get("starts_at")
         const ends_at = formData.get("ends_at")
+        const image_id = formData.get("image_id")
         const result = createEventSchema.safeParse({
           name,
           location,
           description,
           starts_at,
           ends_at,
+          image_id,
         })
         if (result.error) {
           console.log(result.error)
@@ -81,7 +84,7 @@ export function CreateEventForm() {
           return
         }
         setError(undefined)
-        console.log('attempting create')
+        console.log("attempting create")
         await createEvent(result.data)
       }}
       className="mt-8 flex w-full flex-col gap-6 text-3xl text-ra_red"
@@ -94,7 +97,6 @@ export function CreateEventForm() {
           id="name"
           className="col-span-4 w-full rounded-md px-2 py-1 text-black"
         />
-        {/* <input value={uploadFileId} /> */}
       </label>
       <label className="grid grid-cols-5 items-center justify-between gap-4">
         Location
@@ -113,6 +115,8 @@ export function CreateEventForm() {
           className="col-span-4 w-full rounded-md px-2 py-1 text-black"
         />
       </label>
+      {/* hidden input for file id */}
+      <input value={uploadFileId} className="hidden" name="image_id" />
       <label className="grid grid-cols-5 items-center justify-between gap-4">
         Image
         <input

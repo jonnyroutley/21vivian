@@ -12,7 +12,7 @@ enum ApiTags {
 
 pub struct ReviewApi {
     pub db: Arc<DatabaseConnection>,
-    pub pushsafer_service: PushsaferService,
+    pub pushsafer_service: Arc<PushsaferService>,
 }
 
 #[derive(ApiResponse)]

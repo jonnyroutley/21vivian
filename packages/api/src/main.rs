@@ -59,9 +59,19 @@ async fn main() -> Result<(), std::io::Error> {
     let pushsafer_service = PushsaferService::new(pushsafer_client);
 
     let startup_time = Utc::now();
-    let app = routes::app_routes(Arc::new(db), startup_time, s3_service, pushsafer_service);
+    let app = routes::app_routes(
+        Arc::new(db),
+        startup_time,
+        s3_service,
+        Arc::new(pushsafer_service)
+    );
 
     let api_base_url = env::var("API_BASE_URL").unwrap();
 
-    Server::new(TcpListener::bind(api_base_url)).run(app.with(Cors::new())).await
+    Server::new(TcpListener::bind(api_base_url)).run(
+        app.with(
+            Cors::new()
+            // .allow_origin("http://localhost:8080").allow_origin("https://21vivian.com")
+        )
+    ).await
 }

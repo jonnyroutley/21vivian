@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use chrono::{ DateTime, NaiveDateTime };
+use chrono::{ DateTime };
 use poem_openapi::{ payload::Json, OpenApi, Tags, Object, ApiResponse };
 use sea_orm::{ EntityTrait, DatabaseConnection, Set, ActiveModelTrait };
 use entity::{ events, attendees };

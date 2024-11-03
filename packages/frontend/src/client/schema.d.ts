@@ -239,6 +239,52 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json; charset=utf-8": components["schemas"]["UploadImageRequest"];
+                };
+            };
+            responses: {
+                /** @description Returns a list of the events */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["UploadImageDto"];
+                    };
+                };
+                /** @description Likely an issue with the database connection. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/info": {
         parameters: {
             query?: never;
@@ -274,6 +320,52 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/notify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json; charset=utf-8": components["schemas"]["SendNotificationRequest"];
+                };
+            };
+            responses: {
+                /** @description Returns a list of the events */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["SuccessMessage"];
+                    };
+                };
+                /** @description Likely an issue with the database connection. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -301,9 +393,7 @@ export interface components {
             name: string;
             location: string;
             description: string;
-            /** Format: naive-date-time */
             starts_at: string;
-            /** Format: naive-date-time */
             ends_at: string;
             attendees: components["schemas"]["Attendee"][];
         };
@@ -311,9 +401,7 @@ export interface components {
             name: string;
             location: string;
             description: string;
-            /** Format: naive-date-time */
             starts_at: string;
-            /** Format: naive-date-time */
             ends_at: string;
         };
         InputModel: {
@@ -337,6 +425,20 @@ export interface components {
             is_archived: boolean;
             /** Format: naive-date-time */
             created_at: string;
+        };
+        SendNotificationRequest: {
+            id: string;
+        };
+        SuccessMessage: {
+            message: string;
+        };
+        UploadImageDto: {
+            /** Format: int32 */
+            image_id: number;
+        };
+        UploadImageRequest: {
+            image: string;
+            file_name: string;
         };
     };
     responses: never;

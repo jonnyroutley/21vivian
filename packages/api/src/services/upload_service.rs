@@ -27,4 +27,15 @@ impl S3Service {
 
         Ok(presigned_request.uri().to_string())
     }
+
+    pub async fn upload_file(
+        &self,
+        bucket: &str,
+        object: &str,
+        file: Vec<u8>
+    ) -> Result<(), Box<dyn Error>> {
+        self.client.put_object().bucket(bucket).key(object).body(Into::into(file)).send().await?;
+
+        Ok(())
+    }
 }

@@ -7,6 +7,7 @@ servers:
 tags:
 - name: Event
 - name: Info
+- name: Notify
 - name: Review
 - name: Upload
 paths:
@@ -102,6 +103,25 @@ paths:
                 $ref: '#/components/schemas/PresignedLinkDto'
         '500':
           description: Likely an issue with the database connection.
+  /upload:
+    post:
+      tags:
+      - Upload
+      requestBody:
+        content:
+          application/json; charset=utf-8:
+            schema:
+              $ref: '#/components/schemas/UploadImageRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns a list of the events
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/UploadImageDto'
+        '500':
+          description: Likely an issue with the database connection.
   /info:
     get:
       tags:
@@ -113,6 +133,25 @@ paths:
             text/plain; charset=utf-8:
               schema:
                 type: string
+  /notify:
+    post:
+      tags:
+      - Notify
+      requestBody:
+        content:
+          application/json; charset=utf-8:
+            schema:
+              $ref: '#/components/schemas/SendNotificationRequest'
+        required: true
+      responses:
+        '200':
+          description: Returns a list of the events
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+        '500':
+          description: Likely an issue with the database connection.
 components:
   schemas:
     Attendee:
@@ -251,3 +290,35 @@ components:
         created_at:
           type: string
           format: naive-date-time
+    SendNotificationRequest:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+    SuccessMessage:
+      type: object
+      required:
+      - message
+      properties:
+        message:
+          type: string
+    UploadImageDto:
+      type: object
+      required:
+      - image_id
+      properties:
+        image_id:
+          type: integer
+          format: int32
+    UploadImageRequest:
+      type: object
+      required:
+      - image
+      - file_name
+      properties:
+        image:
+          type: string
+        file_name:
+          type: string

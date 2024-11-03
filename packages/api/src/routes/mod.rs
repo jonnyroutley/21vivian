@@ -2,6 +2,7 @@ pub mod event;
 pub mod review;
 pub mod info;
 pub mod upload;
+pub mod notify;
 
 use std::env;
 use std::sync::Arc;
@@ -35,7 +36,7 @@ pub fn app_routes(
     db: Arc<DatabaseConnection>,
     startup_time: DateTime<Utc>,
     s3_service: S3Service,
-    pushsafer_service: PushsaferService
+    pushsafer_service: Arc<PushsaferService>
 ) -> Route {
     let api_base_url = match env::var("API_BASE_URL") {
         Ok(url) => url.to_string(),
@@ -43,10 +44,11 @@ pub fn app_routes(
     };
 
     let all_routes = (
-        review::ReviewApi { db: Arc::clone(&db), pushsafer_service },
+        review::ReviewApi { db: Arc::clone(&db), pushsafer_service: pushsafer_service.clone() },
         event::EventApi { db: Arc::clone(&db) },
         upload::UploadApi { db: Arc::clone(&db), s3_service },
         info::InfoApi { startup_time },
+        notify::NotifyApi { notification_service: pushsafer_service },
     );
     let api_service = OpenApiService::new(all_routes, "API", "1.0").server(
         format!("http://{}", api_base_url)
