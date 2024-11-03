@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use chrono::NaiveDateTime;
+use chrono::{ DateTime, NaiveDateTime };
 use poem_openapi::{ payload::Json, OpenApi, Tags, Object, ApiResponse };
 use sea_orm::{ EntityTrait, DatabaseConnection, Set, ActiveModelTrait };
 use entity::{ events, attendees };
@@ -20,8 +20,10 @@ struct EventDto {
     pub name: String,
     pub location: String,
     pub description: String,
-    pub starts_at: NaiveDateTime,
-    pub ends_at: NaiveDateTime,
+    pub starts_at: String,
+    pub ends_at: String,
+    // pub starts_at: NaiveDateTime,
+    // pub ends_at: NaiveDateTime,
     pub attendees: Vec<entity::attendees::Model>,
 }
 
@@ -39,7 +41,6 @@ enum GetEventsResponse {
     #[oai(status = 500)]
     InternalServerError,
 }
-
 
 #[derive(ApiResponse)]
 enum CreateAttendeeResponse {
@@ -75,8 +76,8 @@ impl EventApi {
                             name: event.name,
                             location: event.location,
                             description: event.description,
-                            starts_at: event.starts_at,
-                            ends_at: event.ends_at,
+                            starts_at: event.starts_at.to_string(),
+                            ends_at: event.ends_at.to_string(),
                             attendees,
                         }
                     })
@@ -92,25 +93,40 @@ impl EventApi {
     }
 
     #[oai(path = "/events", method = "post", tag = "ApiTags::Event")]
-    async fn create_event(&self,
+    async fn create_event(
+        &self,
         Json(create_event): Json<events::EventInputModel>
     ) -> CreateEventResponse {
+        println!("Creating event: {:?}", create_event);
+        let foo = match DateTime::parse_from_rfc3339(&create_event.starts_at) {
+            Ok(foo) => foo,
+            Err(e) => {
+                println!("Failed to parse starts_at: {:?}", e);
+                return CreateEventResponse::InternalServerError;
+            }
+        };
+
         let event = events::ActiveModel {
             name: Set(create_event.name),
             description: Set(create_event.description),
             location: Set(create_event.location),
-            starts_at: Set(create_event.starts_at),
-            ends_at: Set(create_event.ends_at),
+            starts_at: Set(
+                DateTime::parse_from_rfc3339(&create_event.starts_at).unwrap().naive_utc()
+            ),
+            ends_at: Set(DateTime::parse_from_rfc3339(&create_event.ends_at).unwrap().naive_utc()),
+            // ends_at: Set(create_event.ends_at),
             ..Default::default()
         };
+        println!("Event: {:?}", event);
 
         match event.insert(&*self.db).await {
             Ok(_) => println!("Event successfully created"),
             Err(e) => {
-                print!("Failed to get events with error: {:?}", e);
+                println!("Failed to create event with error: {:?}", e);
                 return CreateEventResponse::InternalServerError;
             }
         }
+        print!("Event created successfully");
 
         CreateEventResponse::Ok
     }

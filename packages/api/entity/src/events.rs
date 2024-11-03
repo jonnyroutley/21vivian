@@ -24,8 +24,8 @@ pub struct EventInputModel {
     pub name: String,
     pub location: String,
     pub description: String,
-    pub starts_at: NaiveDateTime,
-    pub ends_at: NaiveDateTime,
+    pub starts_at: String,
+    pub ends_at: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]

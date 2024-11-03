@@ -16,7 +16,7 @@ impl MigrationTrait for Migration {
                 .col(ColumnDef::new(Event::Location).string().not_null())
                 .col(ColumnDef::new(Event::StartsAt).date_time().not_null())
                 .col(ColumnDef::new(Event::EndsAt).date_time())
-                .col(ColumnDef::new(Event::IsArchived).boolean().not_null())
+                .col(ColumnDef::new(Event::IsArchived).boolean().not_null().default(false))
                 .col(
                     ColumnDef::new(Event::CreatedAt)
                         .date_time()

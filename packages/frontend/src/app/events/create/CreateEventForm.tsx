@@ -11,12 +11,14 @@ const createEventSchema = z.object({
   name: z.string().min(1, "Please enter a name"),
   location: z.string().min(1, "Please enter a location"),
   description: z.string().min(1, "Please enter a description"),
+  // starts_at: z.string().datetime({ message: "Start should be a valid date time" }),
+  // ends_at: z.string().datetime({ message: "End should be a valid date time" }),
   starts_at: z.coerce
     .date({ message: "Start should be a valid date time" })
-    .transform((x) => x.toISOString()),
+    .transform((date) => date.toISOString()),
   ends_at: z.coerce
     .date({ message: "End should be a valid date time" })
-    .transform((x) => x.toISOString()),
+    .transform((date) => date.toISOString()),
 })
 
 const uploadImage = async (file: File) => {
@@ -55,7 +57,6 @@ export function CreateEventForm() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const uploadFileId = useState<null | string>(null)
 
-  console.log(fileInputRef)
   const [error, setError] = useState<string>()
   return (
     <form
@@ -64,23 +65,23 @@ export function CreateEventForm() {
         const name = formData.get("name")
         const location = formData.get("location")
         const description = formData.get("description")
-        const starts_at = formData.get("start_date")
-        const ends_at = formData.get("end_date")
+        const starts_at = formData.get("starts_at")
+        const ends_at = formData.get("ends_at")
         const result = createEventSchema.safeParse({
           name,
           location,
           description,
-          start_date: starts_at,
-          end_date: ends_at,
+          starts_at,
+          ends_at,
         })
-        console.log(result)
-        console.log(starts_at, ends_at)
-
         if (result.error) {
+          console.log(result.error)
+          console.log(starts_at)
           setError(result.error.errors[0]?.message)
           return
         }
         setError(undefined)
+        console.log('attempting create')
         await createEvent(result.data)
       }}
       className="mt-8 flex w-full flex-col gap-6 text-3xl text-ra_red"
@@ -135,8 +136,8 @@ export function CreateEventForm() {
         Start
         <input
           type="datetime-local"
-          name="start_date"
-          id="start_date"
+          name="starts_at"
+          id="starts_at"
           className="col-span-4 rounded-md px-2 py-1 text-center text-black"
         />
       </label>
@@ -144,8 +145,8 @@ export function CreateEventForm() {
         End
         <input
           type="datetime-local"
-          name="end_date"
-          id="end_date"
+          name="ends_at"
+          id="ends_at"
           className="col-span-4 rounded-md px-2 py-1 text-center text-black"
         />
       </label>

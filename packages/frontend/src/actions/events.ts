@@ -30,13 +30,15 @@ export async function addAttendeeToEvent(eventData: AddAttendeeBody) {
 }
 
 export async function createEvent(eventData: CreateEventBody) {
-  await fetch(`${config.apiBaseUrl}/events`, {
+console.log(eventData)
+const foo =  await fetch(`${config.apiBaseUrl}/events`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(eventData),
   })
+  console.log(foo)
 
   revalidatePath("/events")
   return {

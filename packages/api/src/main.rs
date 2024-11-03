@@ -36,9 +36,9 @@ async fn main() -> Result<(), std::io::Error> {
         .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
         // Format timestamps for readability
         .with_target(false)
-        .with_thread_ids(true)
-        .with_line_number(true)
-        .with_file(true)
+        // .with_thread_ids(true)
+        // .with_line_number(true)
+        // .with_file(true)
         .init();
 
     match dotenvy::dotenv() {
