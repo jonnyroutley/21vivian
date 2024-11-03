@@ -15,7 +15,7 @@ function LocationPinIcon() {
       className="h-6 w-6 text-ra_red"
     >
       <title>Location</title>
-      <g fill="none" fill-rule="evenodd">
+      <g fill="none" fillRule="evenodd">
         <path fill="none" d="M0 0h24v24H0z"></path>
         <path
           d="M13.613 15.075c.26-.501.505-.988.732-1.456C15.393 11.456 16 9.785 16 9a4 4 0 10-8 0c0 .785.607 2.456 1.655 4.619.227.468.472.955.732 1.456A83.615 83.615 0 0012 18.022c.55-.962 1.1-1.96 1.613-2.947zM18 9c0 1.2-.67 3.045-1.855 5.491-.236.486-.49.99-.758 1.506a86.17 86.17 0 01-2.532 4.522 1 1 0 01-1.71 0 85.564 85.564 0 01-.793-1.35 86.17 86.17 0 01-1.74-3.172 60.318 60.318 0 01-.757-1.506C6.67 12.045 6 10.201 6 9a6 6 0 016-6 6 6 0 016 6z"
@@ -37,7 +37,7 @@ function AttendeesIcon() {
       className="h-6 w-6 text-ra_red"
     >
       <title>Person</title>
-      <g fill="none" fill-rule="evenodd">
+      <g fill="none" fillRule="evenodd">
         <path fill="none" d="M0 0h24v24H0z"></path>
         <path
           d="M14 8a2 2 0 10-4 0 2 2 0 004 0zm2 0a4 4 0 11-8 0 4 4 0 018 0zM7 19a1 1 0 01-2 0 7 7 0 0114 0 1 1 0 01-2 0 5 5 0 00-10 0z"
@@ -51,7 +51,7 @@ function AttendeesIcon() {
 export function DiagonalLine() {
   return (
     <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-      <line x1="100" y1="0" x2="0" y2="100" vector-effect="non-scaling-stroke" stroke="red" />
+      <line x1="100" y1="0" x2="0" y2="100" vectorEffect="non-scaling-stroke" stroke="red" />
     </svg>
   )
 }

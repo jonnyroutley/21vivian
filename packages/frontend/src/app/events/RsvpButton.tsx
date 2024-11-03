@@ -1,10 +1,10 @@
 "use client"
 
 import { League_Gothic } from "next/font/google"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { z } from "zod"
 
-import { createEvent } from "@/actions/events"
+import { addAttendeeToEvent } from "@/actions/events"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -28,25 +28,31 @@ const inputAttendeeSchema = z.object({
 
 const EVENTS_KEY = "vivianEvents"
 
-function getLocalSavedEvents() {
-  return JSON.parse(localStorage.getItem(EVENTS_KEY) || "[]") as number[]
-}
+const EventStorage = {
+  get localSavedEvents(): number[] {
+    if (typeof window === "undefined") return []
+    return JSON.parse(localStorage.getItem(EVENTS_KEY) || "[]") as number[]
+  },
 
-function setLocalSavedEvents(itemToAdd: number) {
-  let data = getLocalSavedEvents()
+  set localSavedEvents(localSavedEvents: number[]) {
+    if (typeof window === "undefined") return
+    localStorage.setItem(EVENTS_KEY, JSON.stringify(localSavedEvents))
+  },
 
-  data.push(itemToAdd)
-
-  return localStorage.setItem(EVENTS_KEY, JSON.stringify(data))
+  addEvent(eventId: number) {
+    const events = this.localSavedEvents
+    events.push(eventId)
+    this.localSavedEvents = events
+  },
 }
 
 export function RsvpButton({ eventId }: { eventId: number }) {
   const [error, setError] = useState<string>()
   const [open, setOpen] = useState(false)
-  const [canJoinEvent, setCanJoinEvent] = useState(!getLocalSavedEvents().includes(eventId))
+  const [canJoinEvent, setCanJoinEvent] = useState(!EventStorage.localSavedEvents.includes(eventId))
 
   const refreshEvents = () => {
-    const events = getLocalSavedEvents()
+    const events = EventStorage.localSavedEvents
     setCanJoinEvent(!events.includes(eventId))
   }
 
@@ -54,7 +60,7 @@ export function RsvpButton({ eventId }: { eventId: number }) {
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
         <Button
-          disabled={!canJoinEvent}
+          disabled={canJoinEvent === false}
           className={cn(
             "group ml-auto mr-2 rounded-full border-2 border-ra_red px-2 py-1 font-mono text-xs hover:bg-ra_red",
           )}
@@ -83,8 +89,8 @@ export function RsvpButton({ eventId }: { eventId: number }) {
               return
             }
             setError(undefined)
-            await createEvent(parsed.data)
-            setLocalSavedEvents(eventIdHidden)
+            await addAttendeeToEvent(parsed.data)
+            EventStorage.addEvent(eventIdHidden)
             refreshEvents()
             setOpen(false)
           }}
