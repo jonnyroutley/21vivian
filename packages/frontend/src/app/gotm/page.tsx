@@ -4,7 +4,7 @@ import { FlipCard } from "./FlipCard"
 
 export default function GirlfriendOfTheMonth() {
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-[#626791]">
+    <div className="relative h-screen w-full overflow-x-hidden bg-[#626791]">
       <Blob1 fill="#B15E81" className="absolute left-[5%] top-[30%] h-64" />
       <Blob2 fill="#59838D" className="absolute left-[10%] top-[50%] h-96" />
       <Blob3 fill="#D18D6A" className="absolute left-[15%] top-[20%] h-32" />
