@@ -82,7 +82,7 @@ export const FlipCard = ({ girlfriendKey }: { girlfriendKey: keyof typeof girlfr
               src={url}
               width={300}
               height={300}
-              className="h-48 w-48 rounded-full object-cover"
+              className="h-48 w-48 rounded-full object-cover z-10"
             />
             {/* </div> */}
             <h2 className="mb-4 text-center text-xl text-amber-300">Girlfriend of: {boyfriend}</h2>
