@@ -14,7 +14,7 @@ export default function GirlfriendOfTheMonth() {
       <Blob1 fill="#B15E81" className="absolute left-[70%] top-[10%] h-64" />
       <Blob2 fill="#59838D" className="absolute left-[80%] top-[40%] h-24" />
       <Blob3 fill="#D18D6A" className="absolute left-[80%] top-[50%] h-32" />
-      <div className="mt-8 flex w-full flex-col justify-center gap-12 lg:mt-0">
+      <div className="my-8 flex w-full flex-col justify-center gap-12 lg:my-0">
         <div className="mx-auto flex min-h-screen w-fit flex-col items-center justify-center gap-12 px-8">
           <h1 className="z-10 text-7xl text-amber-300">Girlfriend of the month</h1>
           <div className="flex flex-shrink-0 flex-col items-center gap-12 lg:flex-row">
