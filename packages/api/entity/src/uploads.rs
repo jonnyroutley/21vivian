@@ -4,8 +4,8 @@ use sea_orm::entity::prelude::*;
 use serde::Serialize;
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Serialize, Object)]
-#[sea_orm(table_name = "image")]
-#[oai(rename = "Image")]
+#[sea_orm(table_name = "upload")]
+#[oai(rename = "Upload")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
@@ -13,6 +13,8 @@ pub struct Model {
     pub bucket: String,
     pub key: String,
     pub created_at: NaiveDateTime,
+    pub entity_type: String,
+    pub entity_id: i32,
 }
 
 #[derive(Object, Debug)]
@@ -22,23 +24,7 @@ pub struct InputModel {
     pub key: String,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter)]
-pub enum Relation {
-    Events,
-}
-
-impl RelationTrait for Relation {
-    fn def(&self) -> RelationDef {
-        match self {
-            Self::Events => Entity::has_one(super::events::Entity).into(),
-        }
-    }
-}
-
-impl Related<super::events::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Events.def()
-    }
-}
+#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

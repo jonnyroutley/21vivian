@@ -5,6 +5,7 @@ mod m20240619_213258_review_add_dates;
 mod m20240619_220003_review_add_name;
 mod m20240801_212835_events;
 mod m20240819_214601_images;
+mod m20241112_222334_uploads;
 
 pub struct Migrator;
 
@@ -17,6 +18,7 @@ impl MigratorTrait for Migrator {
             Box::new(m20240619_220003_review_add_name::Migration),
             Box::new(m20240801_212835_events::Migration),
             Box::new(m20240819_214601_images::Migration),
+            Box::new(m20241112_222334_uploads::Migration),
         ]
     }
 }

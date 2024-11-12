@@ -31,18 +31,12 @@ pub struct EventInputModel {
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
     Attendees,
-    Images,
 }
 
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
             Self::Attendees => Entity::has_many(super::attendees::Entity).into(),
-            Self::Images =>
-                Entity::has_one(super::images::Entity)
-                    .from(Column::ImageId)
-                    .to(super::images::Column::Id)
-                    .into(),
         }
     }
 }
@@ -50,12 +44,6 @@ impl RelationTrait for Relation {
 impl Related<super::attendees::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Attendees.def()
-    }
-}
-
-impl Related<super::images::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Images.def()
     }
 }
 
