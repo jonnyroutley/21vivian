@@ -24,7 +24,6 @@ export default function Home() {
             ENTLEMEN
           </span>
         </h1>
-        <h2 className="animate-pulse text-xs lg:text-base">Coming soon...</h2>
         <Link href={"/reviews"} className="text-xl text-yellow-300 hover:text-yellow-200">
           Leave a review
         </Link>
