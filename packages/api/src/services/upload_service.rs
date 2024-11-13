@@ -34,7 +34,12 @@ impl S3Service {
         object: &str,
         file: Vec<u8>
     ) -> Result<(), Box<dyn Error>> {
-        self.client.put_object().bucket(bucket).key(object).body(Into::into(file)).send().await?;
+        let result = self.client
+            .put_object()
+            .bucket(bucket)
+            .key(object)
+            .body(Into::into(file))
+            .send().await?;
 
         Ok(())
     }

@@ -109,9 +109,15 @@ paths:
       - Upload
       requestBody:
         content:
-          application/json; charset=utf-8:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/UploadImageRequest'
+              type: object
+              required:
+              - upload
+              properties:
+                upload:
+                  type: string
+                  format: binary
         required: true
       responses:
         '200':
@@ -312,13 +318,3 @@ components:
         image_id:
           type: integer
           format: int32
-    UploadImageRequest:
-      type: object
-      required:
-      - image
-      - file_name
-      properties:
-        image:
-          type: string
-        file_name:
-          type: string

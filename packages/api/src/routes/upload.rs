@@ -1,7 +1,16 @@
 use std::sync::Arc;
-
-use poem_openapi::{ payload::Json, OpenApi, Tags, Object, ApiResponse };
-use sea_orm::DatabaseConnection;
+use sea_orm::ActiveModelTrait;
+use entity::uploads;
+use poem_openapi::{
+    payload::Json,
+    types::multipart::Upload,
+    ApiResponse,
+    Multipart,
+    Object,
+    OpenApi,
+    Tags,
+};
+use sea_orm::{ DatabaseConnection, Set, TransactionTrait };
 use uuid::Uuid;
 use crate::services::upload_service::S3Service;
 
@@ -40,12 +49,6 @@ struct UploadImageDto {
     pub image_id: i32,
 }
 
-#[derive(Clone, PartialEq, Eq, Debug, Object)]
-struct UploadImageRequest {
-    pub image: String,
-    pub file_name: String,
-}
-
 #[derive(ApiResponse)]
 enum UploadImageResponse {
     /// Returns a list of the events
@@ -54,6 +57,12 @@ enum UploadImageResponse {
     /// Likely an issue with the database connection.
     #[oai(status = 500)]
     InternalServerError,
+}
+
+#[derive(Multipart)]
+struct GenericUpload {
+    #[oai(rename = "upload")]
+    file: Upload,
 }
 
 #[OpenApi]
@@ -70,22 +79,45 @@ impl UploadApi {
     }
 
     #[oai(path = "/upload", method = "post", tag = "ApiTags::Upload")]
-    async fn upload_image(&self, Json(upload): Json<UploadImageRequest>) -> UploadImageResponse {
-        let object = format!(
-            "{uuid}{file_name}",
-            uuid = Uuid::new_v4().to_string(),
-            file_name = upload.file_name
-        );
+    async fn upload_image(&self, upload: GenericUpload) -> UploadImageResponse {
+        const MAX_SIZE: usize = 10 * 1024 * 1024; // 10 MB
+        if upload.file.size() > MAX_SIZE {
+            return UploadImageResponse::InternalServerError;
+        }
 
-        match self.s3_service.upload_file("21vivian-bucket", &object, Vec::new()).await {
-            Ok(_) =>
-                UploadImageResponse::Ok(
-                    Json(UploadImageDto { image_id: 23 }) // FIXME:
-                ),
-            Err(e) => {
-                println!("{:?}", e);
-                UploadImageResponse::InternalServerError
-            }
+        let file_name = upload.file.file_name().unwrap_or_else(|| "unnamed");
+
+        let extension = std::path::Path
+            ::new(&file_name)
+            .extension()
+            .and_then(|ext| ext.to_str())
+            .unwrap_or("");
+
+        let allowed_extensions = ["jpg", "jpeg", "png", "gif"];
+        if !allowed_extensions.contains(&extension.to_lowercase().as_str()) {
+            return UploadImageResponse::InternalServerError;
+        }
+
+        let object = format!("{}-{}", Uuid::new_v4().to_string(), file_name);
+
+        let txn = self.db.begin().await.unwrap();
+
+        let result = (uploads::ActiveModel {
+            key: Set(object.clone()),
+            bucket: Set("21vivian-bucket".to_string()),
+            region: Set("eu-west-2".to_string()),
+            ..Default::default()
+        }).save(&txn).await;
+
+        self.s3_service
+            .upload_file("21vivian-bucket", &object, upload.file.into_vec().await.unwrap()).await
+            .unwrap();
+
+        txn.commit().await.unwrap();
+
+        match result {
+            Ok(res) => UploadImageResponse::Ok(Json(UploadImageDto { image_id: res.id.unwrap() })),
+            Err(_) => UploadImageResponse::InternalServerError,
         }
     }
 }

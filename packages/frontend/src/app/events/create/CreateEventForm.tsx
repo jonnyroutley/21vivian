@@ -17,33 +17,23 @@ const createEventSchema = z.object({
   ends_at: z.coerce
     .date({ message: "End should be a valid date time" })
     .transform((date) => date.toISOString()),
-  image_id: z.number(),
+  image_id: z.number({ message: "Please upload an image" }),
 })
 
 const uploadImage = async (file: File, setImageId: (image_id: number) => void) => {
-  const getPresignedUrlResponse = await fetch(`${config.apiBaseUrl}/upload/presigned-link`)
-  if (getPresignedUrlResponse.status !== 200) {
-    // Do something
-  }
-
-  const json = (await getPresignedUrlResponse.json()) as components["schemas"]["PresignedLinkDto"]
-
-  const presignedUrl = json.presigned_link
-
+  const formData = new FormData()
+  formData.append("upload", file)
   try {
-    const response = await fetch(presignedUrl, {
-      method: "PUT",
-      body: file,
-      headers: {
-        "Content-Type": file.type,
-      },
+    const response = await fetch(`${config.apiBaseUrl}/upload`, {
+      method: "POST",
+      body: formData,
     })
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     console.log(response)
-    setImageId(1)
+    setImageId(1) // to response . something
 
     console.log("File uploaded successfully")
     return true
@@ -126,6 +116,14 @@ export function CreateEventForm() {
           ref={fileInputRef}
           className="col-span-4 col-start-2 hidden w-full rounded-md px-2 py-1 text-black"
           accept=".jpg, .jpeg, .png" // TODO: consider if more needed here
+          onChange={async (e) => {
+            const file = e.target.files && e.target.files[0]
+            if (!file) {
+              return
+            }
+
+            await uploadImage(file, setUploadFileId)
+          }}
         />
         <div className="col-span-4 w-full rounded-md border border-ra_red text-center hover:cursor-pointer hover:bg-ra_red hover:text-black">
           Select file 📎

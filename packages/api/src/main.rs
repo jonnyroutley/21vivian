@@ -2,7 +2,7 @@ use std::{ env, sync::Arc };
 
 use chrono::Utc;
 use migration::{ Migrator, MigratorTrait };
-use poem::{ listener::TcpListener, Server, middleware::Cors, EndpointExt };
+use poem::{ listener::TcpListener, middleware::{ Cors, Tracing }, EndpointExt, Server };
 use sea_orm::{ Database, DatabaseConnection, DbErr };
 use services::{ notification_service::PushsaferService, upload_service::S3Service };
 use tracing_subscriber::{ fmt::format::FmtSpan, EnvFilter };
@@ -59,12 +59,9 @@ async fn main() -> Result<(), std::io::Error> {
     let pushsafer_service = PushsaferService::new(pushsafer_client);
 
     let startup_time = Utc::now();
-    let app = routes::app_routes(
-        Arc::new(db),
-        startup_time,
-        s3_service,
-        Arc::new(pushsafer_service)
-    );
+    let app = routes
+        ::app_routes(Arc::new(db), startup_time, s3_service, Arc::new(pushsafer_service))
+        .with(Tracing);
 
     let api_base_url = env::var("API_BASE_URL").unwrap();
 
