@@ -34,7 +34,7 @@ impl S3Service {
         object: &str,
         file: Vec<u8>
     ) -> Result<(), Box<dyn Error>> {
-        let result = self.client
+        let _result = self.client
             .put_object()
             .bucket(bucket)
             .key(object)

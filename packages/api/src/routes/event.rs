@@ -98,7 +98,7 @@ impl EventApi {
         Json(create_event): Json<events::EventInputModel>
     ) -> CreateEventResponse {
         println!("Creating event: {:?}", create_event);
-        let foo = match DateTime::parse_from_rfc3339(&create_event.starts_at) {
+        let _foo = match DateTime::parse_from_rfc3339(&create_event.starts_at) {
             Ok(foo) => foo,
             Err(e) => {
                 println!("Failed to parse starts_at: {:?}", e);

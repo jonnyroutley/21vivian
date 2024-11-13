@@ -13,8 +13,8 @@ pub struct Model {
     pub bucket: String,
     pub key: String,
     pub created_at: NaiveDateTime,
-    pub entity_type: String,
-    pub entity_id: i32,
+    pub entity_type: Option<String>,
+    pub entity_id: Option<i32>,
 }
 
 #[derive(Object, Debug)]

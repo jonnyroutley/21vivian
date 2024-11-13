@@ -107,17 +107,17 @@ impl UploadApi {
             bucket: Set("21vivian-bucket".to_string()),
             region: Set("eu-west-2".to_string()),
             ..Default::default()
-        }).save(&txn).await;
+        })
+            .save(&txn).await
+            .unwrap();
 
         self.s3_service
             .upload_file("21vivian-bucket", &object, upload.file.into_vec().await.unwrap()).await
             .unwrap();
 
         txn.commit().await.unwrap();
+        println!("{:?}", result);
 
-        match result {
-            Ok(res) => UploadImageResponse::Ok(Json(UploadImageDto { image_id: res.id.unwrap() })),
-            Err(_) => UploadImageResponse::InternalServerError,
-        }
+        UploadImageResponse::Ok(Json(UploadImageDto { image_id: result.id.unwrap() }))
     }
 }
