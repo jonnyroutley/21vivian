@@ -16,7 +16,6 @@ pub struct Model {
     pub ends_at: NaiveDateTime,
     pub is_archived: bool,
     pub created_at: NaiveDateTime,
-    pub image_id: i32,
 }
 
 #[derive(Object, Debug)]
