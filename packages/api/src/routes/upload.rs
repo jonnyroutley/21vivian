@@ -107,15 +107,12 @@ impl UploadApi {
             ..Default::default()
         };
 
-        let txn = self.db.begin().await.unwrap();
-
-        let result = upload_body.save(&txn).await.unwrap();
-
         self.s3_service
             .upload_file("21vivian-bucket", &object, upload.file.into_vec().await.unwrap()).await
             .unwrap();
 
-        txn.commit().await.unwrap();
+        let result = upload_body.save(&*self.db).await.unwrap();
+
         println!("{:?}", result);
 
         UploadImageResponse::Ok(Json(UploadImageDto { image_id: result.id.unwrap() }))

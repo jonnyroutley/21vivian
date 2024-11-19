@@ -4,13 +4,14 @@ use chrono::{ DateTime, NaiveDateTime };
 use poem_openapi::{ payload::Json, ApiResponse, Object, OpenApi, Tags };
 use sea_orm::{
     ActiveModelTrait,
-    ConnectionTrait,
     ColumnTrait,
+    ConnectionTrait,
     DatabaseConnection,
-    QueryFilter,
     DbBackend,
+    DbErr,
     EntityTrait,
     FromQueryResult,
+    QueryFilter,
     Set,
     Statement,
     TransactionTrait,
@@ -110,12 +111,14 @@ impl EventApi {
                 r#"SELECT 
         event.*,
         upload.id as upload_id
-    FROM event 
-    LEFT JOIN upload ON upload.entity_id = event.id 
+        FROM event 
+        LEFT JOIN upload ON upload.entity_id = event.id 
         AND upload.entity_type = 'event';"#,
                 []
             )
-        ).all(&*self.db).await.unwrap();
+        )
+            .all(&*self.db).await
+            .unwrap();
 
         // Fetch attendees separately for each event
         let events_with_attendees = futures::future::join_all(
@@ -205,26 +208,32 @@ impl EventApi {
         };
         println!("Event: {:?}", event_body);
 
-        let txn = self.db.begin().await.unwrap();
+        let transaction_result = self.db.transaction::<_, (), DbErr>(|txn| {
+            Box::pin(async move {
+                let event_result = event_body.insert(txn).await.unwrap();
 
-        let event_result = event_body.insert(&txn).await.unwrap();
+                let upload: Option<uploads::Model> = uploads::Entity
+                    ::find_by_id(create_event.image_id)
+                    .one(txn).await
+                    .unwrap();
 
-        let upload: Option<uploads::Model> = uploads::Entity
-            ::find_by_id(create_event.image_id)
-            .one(&txn).await
-            .unwrap();
+                let mut upload: uploads::ActiveModel = upload.unwrap().into();
+                upload.entity_type = Set(Some("event".to_string()));
+                upload.entity_id = Set(Some(event_result.id));
 
-        let mut upload: uploads::ActiveModel = upload.unwrap().into();
-        upload.entity_type = Set(Some("event".to_string()));
-        upload.entity_id = Set(Some(event_result.id));
+                upload.save(txn).await.unwrap();
 
-        upload.save(&txn).await.unwrap();
+                Ok(())
+            })
+        }).await;
 
-        txn.commit().await.unwrap();
-
-        println!("Upload updated to have image id");
-
-        CreateEventResponse::Ok
+        match transaction_result {
+            Ok(_) => CreateEventResponse::Ok,
+            Err(err) => {
+                println!("Error persisting event:\n{:?}", err);
+                return CreateEventResponse::InternalServerError;
+            }
+        }
     }
 
     #[oai(path = "/events/attendee", method = "post", tag = "ApiTags::Event")]
