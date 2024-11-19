@@ -1,9 +1,21 @@
-use std::sync::Arc;
+use std::{ ptr::null, sync::Arc };
 
-use chrono::{ DateTime };
-use poem_openapi::{ payload::Json, OpenApi, Tags, Object, ApiResponse };
-use sea_orm::{ EntityTrait, DatabaseConnection, Set, ActiveModelTrait };
-use entity::{ events, attendees };
+use chrono::{ DateTime, NaiveDateTime };
+use poem_openapi::{ payload::Json, ApiResponse, Object, OpenApi, Tags };
+use sea_orm::{
+    ActiveModelTrait,
+    ConnectionTrait,
+    ColumnTrait,
+    DatabaseConnection,
+    QueryFilter,
+    DbBackend,
+    EntityTrait,
+    FromQueryResult,
+    Set,
+    Statement,
+    TransactionTrait,
+};
+use entity::{ attendees, events, uploads };
 
 #[derive(Tags)]
 enum ApiTags {
@@ -22,9 +34,8 @@ struct EventDto {
     pub description: String,
     pub starts_at: String,
     pub ends_at: String,
-    // pub starts_at: NaiveDateTime,
-    // pub ends_at: NaiveDateTime,
     pub attendees: Vec<entity::attendees::Model>,
+    pub image_id: i32,
 }
 
 #[derive(Object)]
@@ -52,6 +63,16 @@ enum CreateAttendeeResponse {
     InternalServerError,
 }
 
+#[derive(Object, Debug)]
+struct CreateEventInput {
+    pub name: String,
+    pub location: String,
+    pub description: String,
+    pub starts_at: String,
+    pub ends_at: String,
+    pub image_id: i32,
+}
+
 #[derive(ApiResponse)]
 enum CreateEventResponse {
     /// Returns a list of the events
@@ -62,51 +83,117 @@ enum CreateEventResponse {
     InternalServerError,
 }
 
+struct Attendee {
+    id: i32,
+    name: String,
+}
+
+#[derive(FromQueryResult, Clone)]
+struct EventWithUpload {
+    id: i32,
+    name: String,
+    location: String,
+    description: String,
+    starts_at: NaiveDateTime,
+    ends_at: NaiveDateTime,
+    upload_id: Option<i32>,
+}
+
 #[OpenApi]
 impl EventApi {
     #[oai(path = "/events", method = "get", tag = "ApiTags::Event")]
     async fn get_events(&self) -> GetEventsResponse {
-        match events::Entity::find().find_with_related(attendees::Entity).all(&*self.db).await {
-            Ok(events) => {
-                let events_mapped: Vec<EventDto> = events
-                    .into_iter()
-                    .map(|(event, attendees)| {
-                        EventDto {
-                            id: event.id,
-                            name: event.name,
-                            location: event.location,
-                            description: event.description,
-                            starts_at: event.starts_at.to_string(),
-                            ends_at: event.ends_at.to_string(),
-                            attendees,
-                        }
-                    })
-                    .collect();
+        // Then in your code:
+        let events = EventWithUpload::find_by_statement(
+            Statement::from_sql_and_values(
+                DbBackend::Postgres,
+                r#"SELECT 
+        event.*,
+        upload.id as upload_id
+    FROM event 
+    LEFT JOIN upload ON upload.entity_id = event.id 
+        AND upload.entity_type = 'event';"#,
+                []
+            )
+        ).all(&*self.db).await.unwrap();
 
-                return GetEventsResponse::Ok(Json(events_mapped));
-            }
-            Err(e) => {
-                print!("Failed to get events with error: {:?}", e);
-                return GetEventsResponse::InternalServerError;
-            }
-        }
+        // Fetch attendees separately for each event
+        let events_with_attendees = futures::future::join_all(
+            events.into_iter().map(|event| {
+                let event_clone = event.clone();
+                async move {
+                    let attendees = attendees::Entity
+                        ::find()
+                        .filter(attendees::Column::EventId.eq(event_clone.id))
+                        .all(&*self.db).await
+                        .unwrap_or_default();
+
+                    EventDto {
+                        id: event_clone.id,
+                        name: event_clone.name,
+                        location: event_clone.location,
+                        description: event_clone.description,
+                        starts_at: event_clone.starts_at.to_string(),
+                        ends_at: event_clone.ends_at.to_string(),
+                        attendees,
+                        image_id: event_clone.upload_id.unwrap_or(0),
+                    }
+                }
+            })
+        ).await;
+        GetEventsResponse::Ok(Json(events_with_attendees))
+        //         match
+        //             EventWithUploadAndAttendees::find_by_statement(
+        //                 Statement::from_sql_and_values(
+        //                     DbBackend::Postgres,
+        //                     r#"SELECT
+        //     event.*,
+        //     upload.id as upload_id,
+        //     array_agg(attendee.id) as attendee_ids,
+        //     array_agg(jsonb_build_object('id', attendee.id, 'name', attendee.name)) as attendees
+        // FROM event
+        // LEFT JOIN upload ON upload.entity_id = event.id
+        //     AND upload.entity_type = 'event'
+        // LEFT JOIN attendee ON attendee.event_id = event.id
+        // GROUP BY event.id, upload.id;"#,
+        //                     []
+        //                 )
+        //             ).all(&*self.db).await
+        //         {
+        //             Ok(events) => {
+        //                 let events_mapped: Vec<EventDto> = events
+        //                     .into_iter()
+        //                     .map(|event| {
+        //                         EventDto {
+        //                             id: event.id,
+        //                             name: event.name,
+        //                             location: event.location,
+        //                             description: event.description,
+        //                             starts_at: event.starts_at.to_string(),
+        //                             ends_at: event.ends_at.to_string(),
+        //                             attendees: event.attendees,
+        //                             image_id: event.upload_id.unwrap_or(0),
+        //                         }
+        //                     })
+        //                     .collect();
+
+        //                 return GetEventsResponse::Ok(Json(events_mapped));
+        //             }
+        //             Err(e) => {
+        //                 print!("Failed to get events with error: {:?}", e);
+        //                 return GetEventsResponse::InternalServerError;
+        //             }
+        //         }
     }
 
     #[oai(path = "/events", method = "post", tag = "ApiTags::Event")]
     async fn create_event(
         &self,
-        Json(create_event): Json<events::EventInputModel>
+        Json(create_event): Json<CreateEventInput>
     ) -> CreateEventResponse {
         println!("Creating event: {:?}", create_event);
-        let _foo = match DateTime::parse_from_rfc3339(&create_event.starts_at) {
-            Ok(foo) => foo,
-            Err(e) => {
-                println!("Failed to parse starts_at: {:?}", e);
-                return CreateEventResponse::InternalServerError;
-            }
-        };
 
-        let event = events::ActiveModel {
+        let event_body = events::ActiveModel {
             name: Set(create_event.name),
             description: Set(create_event.description),
             location: Set(create_event.location),
@@ -114,19 +201,28 @@ impl EventApi {
                 DateTime::parse_from_rfc3339(&create_event.starts_at).unwrap().naive_utc()
             ),
             ends_at: Set(DateTime::parse_from_rfc3339(&create_event.ends_at).unwrap().naive_utc()),
-            // ends_at: Set(create_event.ends_at),
             ..Default::default()
         };
-        println!("Event: {:?}", event);
+        println!("Event: {:?}", event_body);
 
-        match event.insert(&*self.db).await {
-            Ok(_) => println!("Event successfully created"),
-            Err(e) => {
-                println!("Failed to create event with error: {:?}", e);
-                return CreateEventResponse::InternalServerError;
-            }
-        }
-        print!("Event created successfully");
+        let txn = self.db.begin().await.unwrap();
+
+        let event_result = event_body.insert(&txn).await.unwrap();
+
+        let upload: Option<uploads::Model> = uploads::Entity
+            ::find_by_id(create_event.image_id)
+            .one(&txn).await
+            .unwrap();
+
+        let mut upload: uploads::ActiveModel = upload.unwrap().into();
+        upload.entity_type = Set(Some("event".to_string()));
+        upload.entity_id = Set(Some(event_result.id));
+
+        upload.save(&txn).await.unwrap();
+
+        txn.commit().await.unwrap();
+
+        println!("Upload updated to have image id");
 
         CreateEventResponse::Ok
     }

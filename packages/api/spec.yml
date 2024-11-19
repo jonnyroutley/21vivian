@@ -68,7 +68,7 @@ paths:
         content:
           application/json; charset=utf-8:
             schema:
-              $ref: '#/components/schemas/EventInputModel'
+              $ref: '#/components/schemas/CreateEventInput'
         required: true
       responses:
         '200':
@@ -190,6 +190,29 @@ components:
         event_id:
           type: integer
           format: int32
+    CreateEventInput:
+      type: object
+      required:
+      - name
+      - location
+      - description
+      - starts_at
+      - ends_at
+      - image_id
+      properties:
+        name:
+          type: string
+        location:
+          type: string
+        description:
+          type: string
+        starts_at:
+          type: string
+        ends_at:
+          type: string
+        image_id:
+          type: integer
+          format: int32
     ErrorMessage:
       type: object
       required:
@@ -207,6 +230,7 @@ components:
       - starts_at
       - ends_at
       - attendees
+      - image_id
       properties:
         id:
           type: integer
@@ -225,25 +249,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Attendee'
-    EventInputModel:
-      type: object
-      required:
-      - name
-      - location
-      - description
-      - starts_at
-      - ends_at
-      properties:
-        name:
-          type: string
-        location:
-          type: string
-        description:
-          type: string
-        starts_at:
-          type: string
-        ends_at:
-          type: string
+        image_id:
+          type: integer
+          format: int32
     InputModel:
       type: object
       required:
