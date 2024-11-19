@@ -21,7 +21,7 @@ impl MigrationTrait for Migration {
                         .default(Expr::current_timestamp())
                 )
                 .col(ColumnDef::new(Upload::EntityType).string())
-                .col(ColumnDef::new(Upload::EntityId).string())
+                .col(ColumnDef::new(Upload::EntityId).integer())
                 .to_owned()
         ).await?;
 

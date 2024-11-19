@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use sea_orm::ActiveModelTrait;
+use sea_orm::{ ActiveModelTrait, DbErr };
 use entity::uploads;
 use poem_openapi::{
     payload::Json,
@@ -100,16 +100,16 @@ impl UploadApi {
 
         let object = format!("{}-{}", Uuid::new_v4().to_string(), file_name);
 
-        let txn = self.db.begin().await.unwrap();
-
-        let result = (uploads::ActiveModel {
+        let upload_body = uploads::ActiveModel {
             key: Set(object.clone()),
             bucket: Set("21vivian-bucket".to_string()),
             region: Set("eu-west-2".to_string()),
             ..Default::default()
-        })
-            .save(&txn).await
-            .unwrap();
+        };
+
+        let txn = self.db.begin().await.unwrap();
+
+        let result = upload_body.save(&txn).await.unwrap();
 
         self.s3_service
             .upload_file("21vivian-bucket", &object, upload.file.into_vec().await.unwrap()).await

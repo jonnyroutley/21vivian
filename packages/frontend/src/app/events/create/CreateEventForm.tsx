@@ -17,7 +17,7 @@ const createEventSchema = z.object({
   ends_at: z.coerce
     .date({ message: "End should be a valid date time" })
     .transform((date) => date.toISOString()),
-  image_id: z.number({ message: "Please upload an image" }),
+  image_id: z.coerce.number({ message: "Please upload an image" }),
 })
 
 const uploadImage = async (file: File, setImageId: (image_id: number) => void) => {
@@ -32,10 +32,9 @@ const uploadImage = async (file: File, setImageId: (image_id: number) => void) =
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
-    console.log(response)
-    setImageId(1) // to response . something
+    const body = await response.json()
+    setImageId(body.image_id as number)
 
-    console.log("File uploaded successfully")
     return true
   } catch (error) {
     console.error("Error uploading file:", error)
@@ -68,13 +67,10 @@ export function CreateEventForm() {
           image_id,
         })
         if (result.error) {
-          console.log(result.error)
-          console.log(starts_at)
           setError(result.error.errors[0]?.message)
           return
         }
         setError(undefined)
-        console.log("attempting create")
         await createEvent(result.data)
       }}
       className="mt-8 flex w-full flex-col gap-6 text-3xl text-ra_red"
@@ -115,7 +111,7 @@ export function CreateEventForm() {
           id="image"
           ref={fileInputRef}
           className="col-span-4 col-start-2 hidden w-full rounded-md px-2 py-1 text-black"
-          accept=".jpg, .jpeg, .png" // TODO: consider if more needed here
+          accept=".jpg, .jpeg, .png, .gif" // TODO: consider if more needed here
           onChange={async (e) => {
             const file = e.target.files && e.target.files[0]
             if (!file) {
