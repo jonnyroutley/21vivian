@@ -52,7 +52,6 @@ const girlfriends = {
 
 export const FlipCard = ({ girlfriendKey }: { girlfriendKey: keyof typeof girlfriends }) => {
   const [isFlipped, setIsFlipped] = useState(false)
-  console.log(girlfriends, girlfriendKey)
   const { name, boyfriend, girlfriend, url } = girlfriends[girlfriendKey]
 
   return (
@@ -82,7 +81,7 @@ export const FlipCard = ({ girlfriendKey }: { girlfriendKey: keyof typeof girlfr
               src={url}
               width={300}
               height={300}
-              className="h-48 w-48 rounded-full object-cover z-10"
+              className="z-10 h-48 w-48 rounded-full object-cover"
             />
             {/* </div> */}
             <h2 className="mb-4 text-center text-xl text-amber-300">Girlfriend of: {boyfriend}</h2>
