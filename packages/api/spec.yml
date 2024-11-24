@@ -90,10 +90,18 @@ paths:
           description: Returns a list of the events
         '500':
           description: Likely an issue with the database connection.
-  /upload/presigned-link:
+  /upload/presigned-link/{object}:
     get:
       tags:
       - Upload
+      parameters:
+      - name: object
+        schema:
+          type: string
+        in: path
+        required: true
+        deprecated: false
+        explode: true
       responses:
         '200':
           description: Returns a list of the events
@@ -230,7 +238,6 @@ components:
       - starts_at
       - ends_at
       - attendees
-      - image_id
       properties:
         id:
           type: integer
@@ -249,9 +256,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Attendee'
-        image_id:
-          type: integer
-          format: int32
+        upload_key:
+          type: string
     InputModel:
       type: object
       required:

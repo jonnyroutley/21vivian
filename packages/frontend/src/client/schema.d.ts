@@ -197,7 +197,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/upload/presigned-link": {
+    "/upload/presigned-link/{object}": {
         parameters: {
             query?: never;
             header?: never;
@@ -208,7 +208,9 @@ export interface paths {
             parameters: {
                 query?: never;
                 header?: never;
-                path?: never;
+                path: {
+                    object: string;
+                };
                 cookie?: never;
             };
             requestBody?: never;
@@ -408,8 +410,7 @@ export interface components {
             starts_at: string;
             ends_at: string;
             attendees: components["schemas"]["Attendee"][];
-            /** Format: int32 */
-            image_id: number;
+            upload_key?: string;
         };
         InputModel: {
             name: string;

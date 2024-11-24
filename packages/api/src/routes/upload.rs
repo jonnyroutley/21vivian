@@ -1,7 +1,8 @@
 use std::sync::Arc;
-use sea_orm::{ ActiveModelTrait, DbErr };
+use sea_orm::ActiveModelTrait;
 use entity::uploads;
 use poem_openapi::{
+    param::Path,
     payload::Json,
     types::multipart::Upload,
     ApiResponse,
@@ -10,7 +11,8 @@ use poem_openapi::{
     OpenApi,
     Tags,
 };
-use sea_orm::{ DatabaseConnection, Set, TransactionTrait };
+use sea_orm::{ DatabaseConnection, Set };
+use urlencoding::encode;
 use uuid::Uuid;
 use crate::services::upload_service::S3Service;
 
@@ -67,10 +69,11 @@ struct GenericUpload {
 
 #[OpenApi]
 impl UploadApi {
-    #[oai(path = "/upload/presigned-link", method = "get", tag = "ApiTags::Upload")]
-    async fn get_presigned_uri(&self) -> GetUploadLinkResponse {
-        match self.s3_service.get_presigned_uri("21vivian-bucket", "test.txt", 60 * 5).await {
+    #[oai(path = "/upload/presigned-link/:object", method = "get", tag = "ApiTags::Upload")]
+    async fn get_presigned_uri(&self, object: Path<String>) -> GetUploadLinkResponse {
+        match self.s3_service.get_presigned_uri("21vivian-bucket", &object, 60 * 5).await {
             Ok(link) => GetUploadLinkResponse::Ok(Json(PresignedLinkDto { presigned_link: link })),
+
             Err(e) => {
                 println!("{:?}", e);
                 GetUploadLinkResponse::InternalServerError

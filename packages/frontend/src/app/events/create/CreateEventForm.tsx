@@ -1,10 +1,10 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { useRef, useState } from "react"
 import { set, z } from "zod"
 
 import { createEvent } from "@/actions/events"
-import { components } from "@/client/schema"
 import { config } from "@/lib/config"
 
 const createEventSchema = z.object({
@@ -46,6 +46,7 @@ export function CreateEventForm() {
   const formRef = useRef<HTMLFormElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploadFileId, setUploadFileId] = useState<number>()
+  const router = useRouter()
 
   const [error, setError] = useState<string>()
   return (
@@ -71,7 +72,10 @@ export function CreateEventForm() {
           return
         }
         setError(undefined)
-        await createEvent(result.data)
+        const response = await createEvent(result.data)
+        if (response.message === "success") {
+          router.push("/events")
+        }
       }}
       className="mt-8 flex w-full flex-col gap-6 text-3xl text-ra_red"
     >
