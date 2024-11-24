@@ -68,7 +68,7 @@ paths:
         content:
           application/json; charset=utf-8:
             schema:
-              $ref: '#/components/schemas/EventInputModel'
+              $ref: '#/components/schemas/CreateEventInput'
         required: true
       responses:
         '200':
@@ -90,10 +90,18 @@ paths:
           description: Returns a list of the events
         '500':
           description: Likely an issue with the database connection.
-  /upload/presigned-link:
+  /upload/presigned-link/{object}:
     get:
       tags:
       - Upload
+      parameters:
+      - name: object
+        schema:
+          type: string
+        in: path
+        required: true
+        deprecated: false
+        explode: true
       responses:
         '200':
           description: Returns a list of the events
@@ -190,6 +198,29 @@ components:
         event_id:
           type: integer
           format: int32
+    CreateEventInput:
+      type: object
+      required:
+      - name
+      - location
+      - description
+      - starts_at
+      - ends_at
+      - image_id
+      properties:
+        name:
+          type: string
+        location:
+          type: string
+        description:
+          type: string
+        starts_at:
+          type: string
+        ends_at:
+          type: string
+        image_id:
+          type: integer
+          format: int32
     ErrorMessage:
       type: object
       required:
@@ -225,24 +256,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Attendee'
-    EventInputModel:
-      type: object
-      required:
-      - name
-      - location
-      - description
-      - starts_at
-      - ends_at
-      properties:
-        name:
-          type: string
-        location:
-          type: string
-        description:
-          type: string
-        starts_at:
-          type: string
-        ends_at:
+        upload_key:
           type: string
     InputModel:
       type: object

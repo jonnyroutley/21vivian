@@ -20,7 +20,7 @@ impl S3Service {
         let expires_in = Duration::from_secs(expires_in);
 
         let presigned_request = self.client
-            .put_object()
+            .get_object()
             .bucket(bucket)
             .key(object)
             .presigned(PresigningConfig::expires_in(expires_in)?).await?;

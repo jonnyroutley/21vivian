@@ -1,9 +1,18 @@
 use std::sync::Arc;
 
-use chrono::{ DateTime };
-use poem_openapi::{ payload::Json, OpenApi, Tags, Object, ApiResponse };
-use sea_orm::{ EntityTrait, DatabaseConnection, Set, ActiveModelTrait };
-use entity::{ events, attendees };
+use chrono::DateTime;
+use poem_openapi::{ payload::Json, ApiResponse, Object, OpenApi, Tags };
+use sea_orm::{
+    ActiveModelTrait,
+    ColumnTrait,
+    DatabaseConnection,
+    DbErr,
+    EntityTrait,
+    QueryFilter,
+    Set,
+    TransactionTrait,
+};
+use entity::{ attendees, events, uploads };
 
 #[derive(Tags)]
 enum ApiTags {
@@ -22,9 +31,8 @@ struct EventDto {
     pub description: String,
     pub starts_at: String,
     pub ends_at: String,
-    // pub starts_at: NaiveDateTime,
-    // pub ends_at: NaiveDateTime,
     pub attendees: Vec<entity::attendees::Model>,
+    pub upload_key: Option<String>,
 }
 
 #[derive(Object)]
@@ -52,6 +60,16 @@ enum CreateAttendeeResponse {
     InternalServerError,
 }
 
+#[derive(Object, Debug)]
+struct CreateEventInput {
+    pub name: String,
+    pub location: String,
+    pub description: String,
+    pub starts_at: String,
+    pub ends_at: String,
+    pub image_id: i32,
+}
+
 #[derive(ApiResponse)]
 enum CreateEventResponse {
     /// Returns a list of the events
@@ -66,47 +84,57 @@ enum CreateEventResponse {
 impl EventApi {
     #[oai(path = "/events", method = "get", tag = "ApiTags::Event")]
     async fn get_events(&self) -> GetEventsResponse {
-        match events::Entity::find().find_with_related(attendees::Entity).all(&*self.db).await {
-            Ok(events) => {
-                let events_mapped: Vec<EventDto> = events
-                    .into_iter()
-                    .map(|(event, attendees)| {
-                        EventDto {
-                            id: event.id,
-                            name: event.name,
-                            location: event.location,
-                            description: event.description,
-                            starts_at: event.starts_at.to_string(),
-                            ends_at: event.ends_at.to_string(),
-                            attendees,
-                        }
-                    })
-                    .collect();
-
-                return GetEventsResponse::Ok(Json(events_mapped));
-            }
-            Err(e) => {
-                print!("Failed to get events with error: {:?}", e);
+        let events_with_attendees = match
+            events::Entity::find().find_with_related(attendees::Entity).all(&*self.db).await
+        {
+            Ok(events) => events,
+            Err(err) => {
+                println!("Error fetching events:\n{:?}", err);
                 return GetEventsResponse::InternalServerError;
             }
-        }
+        };
+
+        let uploads = match
+            uploads::Entity
+                ::find()
+                .filter(uploads::Column::EntityType.eq("event"))
+                .all(&*self.db).await
+        {
+            Ok(uploads) => uploads,
+            Err(err) => {
+                println!("Error fetching uploads:\n{:?}", err);
+                return GetEventsResponse::InternalServerError;
+            }
+        };
+
+        let events_mapped: Vec<EventDto> = events_with_attendees
+            .into_iter()
+            .map(|(event, attendees)| {
+                let upload = uploads.iter().find(|u| u.entity_id == Some(event.id));
+                EventDto {
+                    id: event.id,
+                    name: event.name,
+                    location: event.location,
+                    description: event.description,
+                    starts_at: event.starts_at.to_string(),
+                    ends_at: event.ends_at.to_string(),
+                    attendees,
+                    upload_key: upload.map(|u| Some(u.key.clone())).unwrap_or(None),
+                }
+            })
+            .collect();
+
+        GetEventsResponse::Ok(Json(events_mapped))
     }
 
     #[oai(path = "/events", method = "post", tag = "ApiTags::Event")]
     async fn create_event(
         &self,
-        Json(create_event): Json<events::EventInputModel>
+        Json(create_event): Json<CreateEventInput>
     ) -> CreateEventResponse {
         println!("Creating event: {:?}", create_event);
-        let _foo = match DateTime::parse_from_rfc3339(&create_event.starts_at) {
-            Ok(foo) => foo,
-            Err(e) => {
-                println!("Failed to parse starts_at: {:?}", e);
-                return CreateEventResponse::InternalServerError;
-            }
-        };
 
-        let event = events::ActiveModel {
+        let event_body = events::ActiveModel {
             name: Set(create_event.name),
             description: Set(create_event.description),
             location: Set(create_event.location),
@@ -114,21 +142,36 @@ impl EventApi {
                 DateTime::parse_from_rfc3339(&create_event.starts_at).unwrap().naive_utc()
             ),
             ends_at: Set(DateTime::parse_from_rfc3339(&create_event.ends_at).unwrap().naive_utc()),
-            // ends_at: Set(create_event.ends_at),
             ..Default::default()
         };
-        println!("Event: {:?}", event);
+        println!("Event: {:?}", event_body);
 
-        match event.insert(&*self.db).await {
-            Ok(_) => println!("Event successfully created"),
-            Err(e) => {
-                println!("Failed to create event with error: {:?}", e);
+        let transaction_result = self.db.transaction::<_, (), DbErr>(|txn| {
+            Box::pin(async move {
+                let event_result = event_body.insert(txn).await.unwrap();
+
+                let upload: Option<uploads::Model> = uploads::Entity
+                    ::find_by_id(create_event.image_id)
+                    .one(txn).await
+                    .unwrap();
+
+                let mut upload: uploads::ActiveModel = upload.unwrap().into();
+                upload.entity_type = Set(Some("event".to_string()));
+                upload.entity_id = Set(Some(event_result.id));
+
+                upload.save(txn).await.unwrap();
+
+                Ok(())
+            })
+        }).await;
+
+        match transaction_result {
+            Ok(_) => CreateEventResponse::Ok,
+            Err(err) => {
+                println!("Error persisting event:\n{:?}", err);
                 return CreateEventResponse::InternalServerError;
             }
         }
-        print!("Event created successfully");
-
-        CreateEventResponse::Ok
     }
 
     #[oai(path = "/events/attendee", method = "post", tag = "ApiTags::Event")]

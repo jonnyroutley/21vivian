@@ -127,7 +127,7 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json; charset=utf-8": components["schemas"]["EventInputModel"];
+                    "application/json; charset=utf-8": components["schemas"]["CreateEventInput"];
                 };
             };
             responses: {
@@ -197,7 +197,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/upload/presigned-link": {
+    "/upload/presigned-link/{object}": {
         parameters: {
             query?: never;
             header?: never;
@@ -208,7 +208,9 @@ export interface paths {
             parameters: {
                 query?: never;
                 header?: never;
-                path?: never;
+                path: {
+                    object: string;
+                };
                 cookie?: never;
             };
             requestBody?: never;
@@ -257,7 +259,10 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json; charset=utf-8": components["schemas"]["UploadImageRequest"];
+                    "multipart/form-data": {
+                        /** Format: binary */
+                        upload: string;
+                    };
                 };
             };
             responses: {
@@ -384,6 +389,15 @@ export interface components {
             /** Format: int32 */
             event_id: number;
         };
+        CreateEventInput: {
+            name: string;
+            location: string;
+            description: string;
+            starts_at: string;
+            ends_at: string;
+            /** Format: int32 */
+            image_id: number;
+        };
         ErrorMessage: {
             message: string;
         };
@@ -396,13 +410,7 @@ export interface components {
             starts_at: string;
             ends_at: string;
             attendees: components["schemas"]["Attendee"][];
-        };
-        EventInputModel: {
-            name: string;
-            location: string;
-            description: string;
-            starts_at: string;
-            ends_at: string;
+            upload_key?: string;
         };
         InputModel: {
             name: string;
@@ -435,10 +443,6 @@ export interface components {
         UploadImageDto: {
             /** Format: int32 */
             image_id: number;
-        };
-        UploadImageRequest: {
-            image: string;
-            file_name: string;
         };
     };
     responses: never;
