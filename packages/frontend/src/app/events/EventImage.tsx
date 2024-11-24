@@ -21,7 +21,7 @@ export async function EventImage({ event }: { event: components["schemas"]["Even
           src={presignedLink}
           height={300}
           width={400}
-          alt="fraser bbq"
+          alt="image"
           className="max-h-48 w-full object-contain md:max-w-xs bg-neutral-900"
         />
       </>
@@ -32,7 +32,7 @@ export async function EventImage({ event }: { event: components["schemas"]["Even
       src={"/allPointsEast.webp"}
       height={300}
       width={400}
-      alt="all points east"
+      alt="image"
       className="max-h-48 w-full object-contain md:max-w-xs"
     />
   )
