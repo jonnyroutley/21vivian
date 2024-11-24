@@ -22,7 +22,7 @@ export async function EventImage({ event }: { event: components["schemas"]["Even
           height={300}
           width={400}
           alt="fraser bbq"
-          className="w-full md:w-1/3"
+          className="max-h-48 w-full object-contain md:max-w-xs bg-neutral-900"
         />
       </>
     )
@@ -33,7 +33,7 @@ export async function EventImage({ event }: { event: components["schemas"]["Even
       height={300}
       width={400}
       alt="all points east"
-      className="w-full md:w-1/3"
+      className="max-h-48 w-full object-contain md:max-w-xs"
     />
   )
 }
