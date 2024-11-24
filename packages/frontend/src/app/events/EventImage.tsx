@@ -22,18 +22,10 @@ export async function EventImage({ event }: { event: components["schemas"]["Even
           height={300}
           width={400}
           alt="image"
-          className="max-h-48 w-full object-contain md:max-w-xs bg-neutral-900"
+          className="max-h-48 w-full bg-neutral-900 object-cover md:max-w-xs"
         />
       </>
     )
   }
-  return (
-    <Image
-      src={"/allPointsEast.webp"}
-      height={300}
-      width={400}
-      alt="image"
-      className="max-h-48 w-full object-contain md:max-w-xs"
-    />
-  )
+  return <div className="max-h-48 w-full bg-neutral-900 md:max-w-xs" />
 }
