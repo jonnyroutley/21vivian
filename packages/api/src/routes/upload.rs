@@ -12,7 +12,6 @@ use poem_openapi::{
     Tags,
 };
 use sea_orm::{ DatabaseConnection, Set };
-use urlencoding::encode;
 use uuid::Uuid;
 use crate::services::upload_service::S3Service;
 
