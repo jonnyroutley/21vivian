@@ -1,8 +1,8 @@
 import moment from "moment"
-import Image from "next/image"
 
 import { components } from "@/client/schema"
 
+import { AttendeesModal } from "./AttendeesModal"
 import { EventImage } from "./EventImage"
 import { RsvpButton } from "./RsvpButton"
 
@@ -23,27 +23,6 @@ function LocationPinIcon() {
           fill="currentColor"
         ></path>
         <path d="M13 9a1 1 0 11-2 0 1 1 0 112 0" fill="currentColor"></path>
-      </g>
-    </svg>
-  )
-}
-
-function AttendeesIcon() {
-  return (
-    <svg
-      width="100%"
-      height="100%"
-      viewBox="0 0 24 24"
-      aria-label="Person"
-      className="h-6 w-6 text-ra_red"
-    >
-      <title>Person</title>
-      <g fill="none" fillRule="evenodd">
-        <path fill="none" d="M0 0h24v24H0z"></path>
-        <path
-          d="M14 8a2 2 0 10-4 0 2 2 0 004 0zm2 0a4 4 0 11-8 0 4 4 0 018 0zM7 19a1 1 0 01-2 0 7 7 0 0114 0 1 1 0 01-2 0 5 5 0 00-10 0z"
-          fill="currentColor"
-        ></path>
       </g>
     </svg>
   )
@@ -76,16 +55,7 @@ export function SingleEvent({ event }: { event: components["schemas"]["EventDto"
               <LocationPinIcon /> {event.location}
             </div>
             <RsvpButton eventId={event.id} />
-            <div className="group flex items-center gap-2 p-1 hover:bg-neutral-800">
-              <AttendeesIcon /> {event.attendees.length}
-              {event.attendees.length > 0 && (
-                <ul className="peer invisible absolute left-0 right-0 top-[50%] z-10 mx-auto w-64 bg-neutral-800 px-8 py-6 group-hover:visible lg:left-[75%]">
-                  {event.attendees.map((attendee) => (
-                    <li key={attendee.id}>{attendee.name}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
+            <AttendeesModal name={event.name} attendees={event.attendees} />
           </div>
         </div>
       </div>
