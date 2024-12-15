@@ -39,7 +39,7 @@ export function EnergyChart({
   }))
 
   return (
-    <ChartContainer config={chartConfig} className="min-h-[300px] w-full pt-20">
+    <ChartContainer config={chartConfig} className="min-h-[300px] w-full pr-10 pt-20">
       <ResponsiveContainer>
         <BarChart accessibilityLayer data={transformedData} barGap={4}>
           <CartesianGrid vertical={false} />
