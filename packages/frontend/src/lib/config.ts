@@ -7,5 +7,5 @@ const configSchema = z.object({
 
 export const config = configSchema.parse({
   apiBaseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
-  octopusApiKey: process.env.NEXT_PUBLIC_OCTOPUS_API_KEY,
+  octopusApiKey: process.env.OCTOPUS_API_KEY,
 })
