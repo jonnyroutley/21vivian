@@ -32,11 +32,13 @@ export function EnergyChart({
   gasData: ConsumptionRecord[]
 }) {
   // Transform data for the chart, combining electricity and gas
-  const transformedData = electricityData.map((record, index) => ({
-    datetime: dayjs(record.interval_start).format("DD/MM HH:mm"),
-    electricity: record.consumption,
-    gas: gasData[index] ? gasData[index].consumption : 0,
-  }))
+  const transformedData = electricityData
+    .map((record, index) => ({
+      datetime: dayjs(record.interval_start).format("DD/MM HH:mm"),
+      electricity: record.consumption,
+      gas: gasData[index] ? gasData[index].consumption : 0,
+    }))
+    .toReversed()
 
   return (
     <ChartContainer config={chartConfig} className="min-h-[300px] w-full pr-10 pt-20">
