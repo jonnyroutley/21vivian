@@ -43,7 +43,7 @@ async fn main() -> Result<(), std::io::Error> {
 
     match dotenvy::dotenv() {
         Ok(_) => println!("dotenv loaded"),
-        Err(e) => panic!("Couldn't load dotenv ({})", e),
+        Err(e) => println!("Couldn't load .env file ({})", e),
     }
     // Connect to the database
 
