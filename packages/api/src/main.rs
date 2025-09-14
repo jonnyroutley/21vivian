@@ -68,7 +68,6 @@ async fn main() -> Result<(), std::io::Error> {
     Server::new(TcpListener::bind(api_base_url)).run(
         app.with(
             Cors::new()
-            // .allow_origin("http://localhost:8080").allow_origin("https://21vivian.com")
         )
     ).await
 }
