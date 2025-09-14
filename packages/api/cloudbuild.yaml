@@ -1,0 +1,20 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    dir: '.'
+    env:
+      - 'DOCKER_BUILDKIT=1'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/vivian-472117/github.com/jonnyroutley/21vivian:$COMMIT_SHA'
+      - '-f'
+      - 'Dockerfile'
+      - '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/vivian-472117/github.com/jonnyroutley/21vivian:$COMMIT_SHA'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
