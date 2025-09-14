@@ -8,8 +8,8 @@ steps:
       - '-t'
       - 'gcr.io/vivian-472117/github.com/jonnyroutley/21vivian:$COMMIT_SHA'
       - '-f'
-      - 'Dockerfile'
-      - '.'
+      - './packages/api/Dockerfile'
+      - './packages/api'
 
   - name: 'gcr.io/cloud-builders/docker'
     args:
