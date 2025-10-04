@@ -3,8 +3,9 @@ info:
   title: API
   version: '1.0'
 servers:
-- url: http://localhost:8000
+- url: http://0.0.0.0:8000
 tags:
+- name: Chat
 - name: Event
 - name: Info
 - name: Notify
@@ -166,6 +167,23 @@ paths:
                 $ref: '#/components/schemas/SuccessMessage'
         '500':
           description: Likely an issue with the database connection.
+  /chat:
+    post:
+      tags:
+      - Chat
+      requestBody:
+        content:
+          application/json; charset=utf-8:
+            schema:
+              $ref: '#/components/schemas/ChatInput'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/ChatDto'
 components:
   schemas:
     Attendee:
@@ -198,6 +216,20 @@ components:
         event_id:
           type: integer
           format: int32
+    ChatDto:
+      type: object
+      required:
+      - message
+      properties:
+        message:
+          type: string
+    ChatInput:
+      type: object
+      required:
+      - message
+      properties:
+        message:
+          type: string
     CreateEventInput:
       type: object
       required:

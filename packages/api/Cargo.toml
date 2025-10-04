@@ -15,7 +15,7 @@ sea-orm = { version = "0.12", features = [
 ] }
 futures = "0.3.30"
 dotenvy = "0.15.7"
-chrono = "0.4.38"
+chrono = { version = "0.4.38", default_features = false }
 poem-openapi = { version = "5.0.2", features = ["swagger-ui"] }
 serde = "1.0.203"
 aws-config = { version = "1.1.7", features = ["behavior-version-latest"] }

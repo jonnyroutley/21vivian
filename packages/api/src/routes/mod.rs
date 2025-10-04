@@ -3,6 +3,7 @@ pub mod review;
 pub mod info;
 pub mod upload;
 pub mod notify;
+pub mod chat;
 
 use std::env;
 use std::sync::Arc;
@@ -49,6 +50,7 @@ pub fn app_routes(
         upload::UploadApi { db: Arc::clone(&db), s3_service },
         info::InfoApi { startup_time },
         notify::NotifyApi { notification_service: pushsafer_service },
+        chat::ChatApi {},
     );
     let api_service = OpenApiService::new(all_routes, "API", "1.0").server(
         format!("http://{}", api_base_url)
