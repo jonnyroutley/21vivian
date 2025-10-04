@@ -1,6 +1,12 @@
+use std::sync::Arc;
+
 use poem_openapi::{payload::Json, ApiResponse, Object, OpenApi, Tags};
 
-pub struct ChatApi {}
+use crate::services::ai_service::AiService;
+
+pub struct ChatApi {
+    pub ai_service: Arc<AiService>,
+}
 
 #[derive(Tags)]
 enum ApiTags {
@@ -26,8 +32,9 @@ struct ChatInput {
 impl ChatApi {
     #[oai(path = "/chat", method = "post", tag = "ApiTags::Chat")]
     async fn chat(&self, Json(chat): Json<ChatInput>) -> ChatResponse {
+        let response = self.ai_service.generate_content(chat.message).await;
         ChatResponse::Ok(Json(ChatDto {
-            message: format!("You sent the message: '{}'", chat.message),
+            message: response.unwrap(),
         }))
     }
 }
