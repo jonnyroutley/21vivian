@@ -1,5 +1,5 @@
-use chrono::{ DateTime, Utc };
-use poem_openapi::{ payload::PlainText, ApiResponse, OpenApi, Tags };
+use chrono::{DateTime, Utc};
+use poem_openapi::{payload::PlainText, ApiResponse, OpenApi, Tags};
 
 #[derive(Tags)]
 enum ApiTags {
@@ -10,7 +10,7 @@ pub struct InfoApi {
     pub startup_time: DateTime<Utc>,
 }
 
-#[derive(ApiResponse)]  
+#[derive(ApiResponse)]
 enum GetInfoResponse {
     /// Returns the last deployment time
     #[oai(status = 200)]

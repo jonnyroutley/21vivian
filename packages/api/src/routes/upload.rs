@@ -1,19 +1,13 @@
-use std::sync::Arc;
-use sea_orm::ActiveModelTrait;
+use crate::services::upload_service::S3Service;
 use entity::uploads;
 use poem_openapi::{
-    param::Path,
-    payload::Json,
-    types::multipart::Upload,
-    ApiResponse,
-    Multipart,
-    Object,
-    OpenApi,
+    param::Path, payload::Json, types::multipart::Upload, ApiResponse, Multipart, Object, OpenApi,
     Tags,
 };
-use sea_orm::{ DatabaseConnection, Set };
+use sea_orm::ActiveModelTrait;
+use sea_orm::{DatabaseConnection, Set};
+use std::sync::Arc;
 use uuid::Uuid;
-use crate::services::upload_service::S3Service;
 
 #[derive(Tags)]
 enum ApiTags {
@@ -68,10 +62,20 @@ struct GenericUpload {
 
 #[OpenApi]
 impl UploadApi {
-    #[oai(path = "/upload/presigned-link/:object", method = "get", tag = "ApiTags::Upload")]
+    #[oai(
+        path = "/upload/presigned-link/:object",
+        method = "get",
+        tag = "ApiTags::Upload"
+    )]
     async fn get_presigned_uri(&self, object: Path<String>) -> GetUploadLinkResponse {
-        match self.s3_service.get_presigned_uri("21vivian-bucket", &object, 60 * 5).await {
-            Ok(link) => GetUploadLinkResponse::Ok(Json(PresignedLinkDto { presigned_link: link })),
+        match self
+            .s3_service
+            .get_presigned_uri("21vivian-bucket", &object, 60 * 5)
+            .await
+        {
+            Ok(link) => GetUploadLinkResponse::Ok(Json(PresignedLinkDto {
+                presigned_link: link,
+            })),
 
             Err(e) => {
                 println!("{:?}", e);
@@ -89,8 +93,7 @@ impl UploadApi {
 
         let file_name = upload.file.file_name().unwrap_or_else(|| "unnamed");
 
-        let extension = std::path::Path
-            ::new(&file_name)
+        let extension = std::path::Path::new(&file_name)
             .extension()
             .and_then(|ext| ext.to_str())
             .unwrap_or("");
@@ -110,13 +113,20 @@ impl UploadApi {
         };
 
         self.s3_service
-            .upload_file("21vivian-bucket", &object, upload.file.into_vec().await.unwrap()).await
+            .upload_file(
+                "21vivian-bucket",
+                &object,
+                upload.file.into_vec().await.unwrap(),
+            )
+            .await
             .unwrap();
 
         let result = upload_body.save(&*self.db).await.unwrap();
 
         println!("{:?}", result);
 
-        UploadImageResponse::Ok(Json(UploadImageDto { image_id: result.id.unwrap() }))
+        UploadImageResponse::Ok(Json(UploadImageDto {
+            image_id: result.id.unwrap(),
+        }))
     }
 }

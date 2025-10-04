@@ -1,18 +1,12 @@
 use std::sync::Arc;
 
 use chrono::DateTime;
-use poem_openapi::{ payload::Json, ApiResponse, Object, OpenApi, Tags };
+use entity::{attendees, events, uploads};
+use poem_openapi::{payload::Json, ApiResponse, Object, OpenApi, Tags};
 use sea_orm::{
-    ActiveModelTrait,
-    ColumnTrait,
-    DatabaseConnection,
-    DbErr,
-    EntityTrait,
-    QueryFilter,
-    Set,
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, DbErr, EntityTrait, QueryFilter, Set,
     TransactionTrait,
 };
-use entity::{ attendees, events, uploads };
 
 #[derive(Tags)]
 enum ApiTags {
@@ -84,8 +78,10 @@ enum CreateEventResponse {
 impl EventApi {
     #[oai(path = "/events", method = "get", tag = "ApiTags::Event")]
     async fn get_events(&self) -> GetEventsResponse {
-        let events_with_attendees = match
-            events::Entity::find().find_with_related(attendees::Entity).all(&*self.db).await
+        let events_with_attendees = match events::Entity::find()
+            .find_with_related(attendees::Entity)
+            .all(&*self.db)
+            .await
         {
             Ok(events) => events,
             Err(err) => {
@@ -94,11 +90,10 @@ impl EventApi {
             }
         };
 
-        let uploads = match
-            uploads::Entity
-                ::find()
-                .filter(uploads::Column::EntityType.eq("event"))
-                .all(&*self.db).await
+        let uploads = match uploads::Entity::find()
+            .filter(uploads::Column::EntityType.eq("event"))
+            .all(&*self.db)
+            .await
         {
             Ok(uploads) => uploads,
             Err(err) => {
@@ -130,7 +125,7 @@ impl EventApi {
     #[oai(path = "/events", method = "post", tag = "ApiTags::Event")]
     async fn create_event(
         &self,
-        Json(create_event): Json<CreateEventInput>
+        Json(create_event): Json<CreateEventInput>,
     ) -> CreateEventResponse {
         println!("Creating event: {:?}", create_event);
 
@@ -138,32 +133,38 @@ impl EventApi {
             name: Set(create_event.name),
             description: Set(create_event.description),
             location: Set(create_event.location),
-            starts_at: Set(
-                DateTime::parse_from_rfc3339(&create_event.starts_at).unwrap().naive_utc()
-            ),
-            ends_at: Set(DateTime::parse_from_rfc3339(&create_event.ends_at).unwrap().naive_utc()),
+            starts_at: Set(DateTime::parse_from_rfc3339(&create_event.starts_at)
+                .unwrap()
+                .naive_utc()),
+            ends_at: Set(DateTime::parse_from_rfc3339(&create_event.ends_at)
+                .unwrap()
+                .naive_utc()),
             ..Default::default()
         };
         println!("Event: {:?}", event_body);
 
-        let transaction_result = self.db.transaction::<_, (), DbErr>(|txn| {
-            Box::pin(async move {
-                let event_result = event_body.insert(txn).await.unwrap();
+        let transaction_result = self
+            .db
+            .transaction::<_, (), DbErr>(|txn| {
+                Box::pin(async move {
+                    let event_result = event_body.insert(txn).await.unwrap();
 
-                let upload: Option<uploads::Model> = uploads::Entity
-                    ::find_by_id(create_event.image_id)
-                    .one(txn).await
-                    .unwrap();
+                    let upload: Option<uploads::Model> =
+                        uploads::Entity::find_by_id(create_event.image_id)
+                            .one(txn)
+                            .await
+                            .unwrap();
 
-                let mut upload: uploads::ActiveModel = upload.unwrap().into();
-                upload.entity_type = Set(Some("event".to_string()));
-                upload.entity_id = Set(Some(event_result.id));
+                    let mut upload: uploads::ActiveModel = upload.unwrap().into();
+                    upload.entity_type = Set(Some("event".to_string()));
+                    upload.entity_id = Set(Some(event_result.id));
 
-                upload.save(txn).await.unwrap();
+                    upload.save(txn).await.unwrap();
 
-                Ok(())
+                    Ok(())
+                })
             })
-        }).await;
+            .await;
 
         match transaction_result {
             Ok(_) => CreateEventResponse::Ok,
@@ -177,7 +178,7 @@ impl EventApi {
     #[oai(path = "/events/attendee", method = "post", tag = "ApiTags::Event")]
     async fn create_attendee(
         &self,
-        Json(create_attendee): Json<attendees::AttendeeInputModel>
+        Json(create_attendee): Json<attendees::AttendeeInputModel>,
     ) -> CreateAttendeeResponse {
         let attendee = attendees::ActiveModel {
             name: Set(create_attendee.name.to_string()),

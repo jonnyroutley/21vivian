@@ -14,7 +14,7 @@ pub struct Model {
     pub description: String,
     pub stars: i32,
     pub is_archived: bool,
-    pub created_at: NaiveDateTime
+    pub created_at: NaiveDateTime,
 }
 
 #[derive(Object, Debug)]

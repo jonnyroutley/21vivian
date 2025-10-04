@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use poem_openapi::{ payload::Json, OpenApi, Tags, Object, ApiResponse };
+use poem_openapi::{payload::Json, ApiResponse, Object, OpenApi, Tags};
 
 use crate::services::notification_service;
 
@@ -42,13 +42,16 @@ impl NotifyApi {
     #[oai(path = "/notify", method = "post", tag = "ApiTags::Notify")]
     async fn get_events(
         &self,
-        Json(body): Json<SendNotificationRequest>
+        Json(body): Json<SendNotificationRequest>,
     ) -> SendNotificationResponse {
-        match self.notification_service.send_template_notification(&body.id).await {
-            Ok(_) =>
-                SendNotificationResponse::Ok(
-                    Json(SuccessMessage { message: "Notification sent".to_string() })
-                ),
+        match self
+            .notification_service
+            .send_template_notification(&body.id)
+            .await
+        {
+            Ok(_) => SendNotificationResponse::Ok(Json(SuccessMessage {
+                message: "Notification sent".to_string(),
+            })),
             Err(_) => SendNotificationResponse::InternalServerError,
         }
     }

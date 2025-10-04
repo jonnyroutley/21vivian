@@ -28,11 +28,10 @@ pub enum Relation {
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
-            Self::Event =>
-                Entity::belongs_to(super::events::Entity)
-                    .from(Column::EventId)
-                    .to(super::events::Column::Id)
-                    .into(),
+            Self::Event => Entity::belongs_to(super::events::Entity)
+                .from(Column::EventId)
+                .to(super::events::Column::Id)
+                .into(),
         }
     }
 }

@@ -1,4 +1,4 @@
-use std::{ collections::HashMap, env };
+use std::{collections::HashMap, env};
 
 use reqwest::Client;
 use serde::Serialize;
@@ -9,16 +9,16 @@ pub struct PushsaferService {
 }
 
 pub struct Notification {
-    m: String, // The message you want to send
-    t: String, // The title of the notification
+    m: String,         // The message you want to send
+    t: String,         // The title of the notification
     u: Option<String>, // url link
 }
 
 #[derive(Serialize)]
 struct PushsaferMessageInternal {
-    k: String, // Your private or alias key
-    m: String, // The message you want to send
-    t: String, // The title of the notification
+    k: String,         // Your private or alias key
+    m: String,         // The message you want to send
+    t: String,         // The title of the notification
     u: Option<String>, // url link
 }
 
@@ -79,30 +79,48 @@ struct NotificationTemplate {
 impl PushsaferService {
     pub fn new(client: Client) -> Self {
         let mut templates = HashMap::new();
-        templates.insert("dinner".to_string(), NotificationTemplate {
-            title: "Dinner time".to_string(),
-            message: "No dilly-dallying".to_string(),
-        });
-        templates.insert("sexy".to_string(), NotificationTemplate {
-            title: "Mr Sexy in da house".to_string(),
-            message: "meooow".to_string(),
-        });
-        templates.insert("dave".to_string(), NotificationTemplate {
-            title: "Dave is here!".to_string(),
-            message: "".to_string(),
-        });
-        templates.insert("pints".to_string(), NotificationTemplate {
-            title: "Pint time".to_string(),
-            message: "It's 5 o'clock somewhere".to_string(),
-        });
-        templates.insert("girlfriend".to_string(), NotificationTemplate {
-            title: "Girlfriend alert !".to_string(),
-            message: "Tops off fellas!".to_string(),
-        });
-        templates.insert("summers".to_string(), NotificationTemplate {
-            title: "Summers family alert !".to_string(),
-            message: "Tops on fellas!".to_string(),
-        });
+        templates.insert(
+            "dinner".to_string(),
+            NotificationTemplate {
+                title: "Dinner time".to_string(),
+                message: "No dilly-dallying".to_string(),
+            },
+        );
+        templates.insert(
+            "sexy".to_string(),
+            NotificationTemplate {
+                title: "Mr Sexy in da house".to_string(),
+                message: "meooow".to_string(),
+            },
+        );
+        templates.insert(
+            "dave".to_string(),
+            NotificationTemplate {
+                title: "Dave is here!".to_string(),
+                message: "".to_string(),
+            },
+        );
+        templates.insert(
+            "pints".to_string(),
+            NotificationTemplate {
+                title: "Pint time".to_string(),
+                message: "It's 5 o'clock somewhere".to_string(),
+            },
+        );
+        templates.insert(
+            "girlfriend".to_string(),
+            NotificationTemplate {
+                title: "Girlfriend alert !".to_string(),
+                message: "Tops off fellas!".to_string(),
+            },
+        );
+        templates.insert(
+            "summers".to_string(),
+            NotificationTemplate {
+                title: "Summers family alert !".to_string(),
+                message: "Tops on fellas!".to_string(),
+            },
+        );
 
         Self { client, templates }
     }
@@ -113,16 +131,20 @@ impl PushsaferService {
 
     pub async fn send_notification(
         &self,
-        pushsafer_message: Notification
+        pushsafer_message: Notification,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let pushsafer_key = env::var("PUSHSAFER_KEY").expect("PUSHSAFER_KEY not found");
 
-        let internal_message = PushsaferMessageInternal::from_public(
-            pushsafer_message,
-            pushsafer_key
-        );
+        let internal_message =
+            PushsaferMessageInternal::from_public(pushsafer_message, pushsafer_key);
 
-        let response = match self.client.post(PUSHSAFER_URL).form(&internal_message).send().await {
+        let response = match self
+            .client
+            .post(PUSHSAFER_URL)
+            .form(&internal_message)
+            .send()
+            .await
+        {
             Ok(result) => result,
             Err(e) => {
                 return Err(Box::new(e));
@@ -143,10 +165,9 @@ impl PushsaferService {
             Some(template) => {
                 println!("Sending notification: {}", template.title);
 
-                let notification = NotificationBuilder::new(
-                    template.title.clone(),
-                    template.message.clone()
-                ).build();
+                let notification =
+                    NotificationBuilder::new(template.title.clone(), template.message.clone())
+                        .build();
 
                 let _ = self.send_notification(notification).await;
                 Ok(())

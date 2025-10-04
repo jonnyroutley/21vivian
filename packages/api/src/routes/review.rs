@@ -1,9 +1,9 @@
-use poem_openapi::{ payload::Json, ApiResponse, Object, OpenApi, Tags };
 use entity::reviews;
-use sea_orm::{ ActiveModelTrait, EntityTrait, Set, DatabaseConnection };
+use poem_openapi::{payload::Json, ApiResponse, Object, OpenApi, Tags};
+use sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait, Set};
 use std::sync::Arc;
 
-use crate::services::notification_service::{ NotificationBuilder, PushsaferService };
+use crate::services::notification_service::{NotificationBuilder, PushsaferService};
 
 #[derive(Tags)]
 enum ApiTags {
@@ -45,7 +45,9 @@ enum GetReviewsResponse {
 
 fn validate_stars(stars: i32) -> Result<(), ErrorMessage> {
     if stars < 0 || stars > 5 {
-        return Err(ErrorMessage { message: "Stars must be between 0 and 5".to_string() });
+        return Err(ErrorMessage {
+            message: "Stars must be between 0 and 5".to_string(),
+        });
     }
     Ok(())
 }
@@ -55,7 +57,7 @@ impl ReviewApi {
     #[oai(path = "/reviews", method = "post", tag = "ApiTags::Review")]
     async fn create_review(
         &self,
-        Json(create_review): Json<reviews::InputModel>
+        Json(create_review): Json<reviews::InputModel>,
     ) -> CreateReviewResponse {
         match validate_stars(create_review.stars) {
             Ok(_) => (),
@@ -83,10 +85,10 @@ impl ReviewApi {
 
         let notification = NotificationBuilder::new(
             String::from("New review!"),
-            format!("See what '{}' had to say...", create_review.name)
+            format!("See what '{}' had to say...", create_review.name),
         )
-            .url(String::from("https://21vivian.com/reviews"))
-            .build();
+        .url(String::from("https://21vivian.com/reviews"))
+        .build();
 
         let _ = self.pushsafer_service.send_notification(notification).await;
 
