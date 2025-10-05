@@ -2,6 +2,7 @@
 
 import { sendChatMessage } from "@/actions/chat";
 import { type components } from "@/client/schema";
+import { cn } from "@/lib/utils";
 import { ArrowUp } from "lucide-react";
 import { EB_Garamond } from "next/font/google";
 import { type FormEvent, useState } from "react";
@@ -24,10 +25,15 @@ function ResponseContainer({
 	return <div className="mb-2">{response.message}</div>;
 }
 
-const housemates = [];
+const housemates: components["schemas"]["Housemate"][] = [
+	"Luke",
+	"Jonny",
+	"George",
+	"Fraser",
+];
 
 export default function ChatPage() {
-	const [housemate, setHousemate] =
+	const [selectedHousemate, setSelectedHousemate] =
 		useState<components["schemas"]["Housemate"]>("George");
 	const [prompts, setPrompts] = useState<string[]>([]);
 	const [responses, setResponses] = useState<
@@ -43,9 +49,9 @@ export default function ChatPage() {
 		}
 		setPrompts((prev) => [...prev, message]);
 
-		const response = await sendChatMessage({ message }, housemate);
-		setResponses((prev) => [...prev, response]);
 		(event.target as HTMLFormElement).reset();
+		const response = await sendChatMessage({ message }, selectedHousemate);
+		setResponses((prev) => [...prev, response]);
 	};
 
 	return (
@@ -75,24 +81,44 @@ export default function ChatPage() {
 						))}
 					</div>
 				</div>
-				<form
-					className="flex w-full items-center gap-2"
-					onSubmit={handleSubmit}
-				>
-					<input
-						className="bg-white w-full shadow-sm px-4 py-3 border border-neutral-300 rounded-xl"
-						type="text"
-						placeholder="Ask me anything"
-						name="message"
-						autoComplete="off"
-					/>
-					<button
-						type="submit"
-						className="text-white bg-[#C66240] disabled:bg-[#E4B1A0] size-8 flex items-center justify-center rounded-md"
+				<div className="flex flex-col gap-4 w-full items-center">
+					<form
+						className="flex w-full items-center gap-2"
+						onSubmit={handleSubmit}
 					>
-						<ArrowUp className="size-4" />
-					</button>
-				</form>
+						<input
+							className="bg-white w-full shadow-sm px-4 py-3 border border-neutral-300 rounded-xl"
+							type="text"
+							placeholder="Ask me anything"
+							name="message"
+							autoComplete="off"
+						/>
+						<button
+							type="submit"
+							className="text-white bg-[#C66240] disabled:bg-[#E4B1A0] size-8 flex items-center justify-center rounded-md"
+						>
+							<ArrowUp className="size-4" />
+						</button>
+					</form>
+					<div className="flex flex-row gap-2">
+						{housemates.map((housemate) => {
+							return (
+								<button
+									key={housemate}
+									onClick={() => setSelectedHousemate(housemate)}
+									type="button"
+									className={cn(
+										housemate === selectedHousemate &&
+											"bg-[#C66240] text-white",
+										"rounded-md p-1",
+									)}
+								>
+									{housemate}
+								</button>
+							);
+						})}
+					</div>
+				</div>
 			</div>
 		</div>
 	);
