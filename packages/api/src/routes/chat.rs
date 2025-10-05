@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
-use poem_openapi::{payload::Json, ApiResponse, Object, OpenApi, Tags};
+use poem_openapi::{param::Path, payload::Json, ApiResponse, Object, OpenApi, Tags};
 
-use crate::services::ai_service::AiService;
+use crate::services::ai_service::{AiService, Housemate};
 
 pub struct ChatApi {
     pub ai_service: Arc<AiService>,
@@ -33,6 +33,21 @@ impl ChatApi {
     #[oai(path = "/chat", method = "post", tag = "ApiTags::Chat")]
     async fn chat(&self, Json(chat): Json<ChatInput>) -> ChatResponse {
         let response = self.ai_service.generate_content(chat.message).await;
+        ChatResponse::Ok(Json(ChatDto {
+            message: response.unwrap(),
+        }))
+    }
+
+    #[oai(path = "/chat/:housemate", method = "post", tag = "ApiTags::Chat")]
+    async fn chat_with_housemate(
+        &self,
+        Json(chat): Json<ChatInput>,
+        housemate: Path<Housemate>,
+    ) -> ChatResponse {
+        let response = self
+            .ai_service
+            .generate_housemate_response(chat.message, housemate.0)
+            .await;
         ChatResponse::Ok(Json(ChatDto {
             message: response.unwrap(),
         }))

@@ -17,6 +17,3 @@ export default async function EnergyPage() {
 		</main>
 	);
 }
-
-// hack for now
-export const dynamic = "force-dynamic";

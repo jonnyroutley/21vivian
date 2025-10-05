@@ -371,6 +371,84 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json; charset=utf-8": components["schemas"]["ChatInput"];
+                };
+            };
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["ChatDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/chat/{housemate}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    housemate: components["schemas"]["Housemate"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json; charset=utf-8": components["schemas"]["ChatInput"];
+                };
+            };
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["ChatDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -388,6 +466,12 @@ export interface components {
             name: string;
             /** Format: int32 */
             event_id: number;
+        };
+        ChatDto: {
+            message: string;
+        };
+        ChatInput: {
+            message: string;
         };
         CreateEventInput: {
             name: string;
@@ -412,6 +496,8 @@ export interface components {
             attendees: components["schemas"]["Attendee"][];
             upload_key?: string;
         };
+        /** @enum {string} */
+        Housemate: "Luke" | "Jonny" | "George" | "Fraser";
         InputModel: {
             name: string;
             title: string;

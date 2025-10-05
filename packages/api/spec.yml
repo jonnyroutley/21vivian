@@ -184,6 +184,31 @@ paths:
             application/json; charset=utf-8:
               schema:
                 $ref: '#/components/schemas/ChatDto'
+  /chat/{housemate}:
+    post:
+      tags:
+      - Chat
+      parameters:
+      - name: housemate
+        schema:
+          $ref: '#/components/schemas/Housemate'
+        in: path
+        required: true
+        deprecated: false
+        explode: true
+      requestBody:
+        content:
+          application/json; charset=utf-8:
+            schema:
+              $ref: '#/components/schemas/ChatInput'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/ChatDto'
 components:
   schemas:
     Attendee:
@@ -290,6 +315,13 @@ components:
             $ref: '#/components/schemas/Attendee'
         upload_key:
           type: string
+    Housemate:
+      type: string
+      enum:
+      - Luke
+      - Jonny
+      - George
+      - Fraser
     InputModel:
       type: object
       required:
