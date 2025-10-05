@@ -1,11 +1,11 @@
 "use client";
 
-import { sendChatMessage } from "@/actions/chat";
-import { type components } from "@/client/schema";
-import { cn } from "@/lib/utils";
 import { ArrowUp } from "lucide-react";
 import { EB_Garamond } from "next/font/google";
 import { type FormEvent, useState } from "react";
+import { sendChatMessage } from "@/actions/chat";
+import type { components } from "@/client/schema";
+import { cn } from "@/lib/utils";
 
 const ebGaramond = EB_Garamond({ weight: "variable", subsets: ["latin"] });
 
