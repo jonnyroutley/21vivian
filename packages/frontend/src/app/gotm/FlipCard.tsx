@@ -56,7 +56,6 @@ export const FlipCard = ({
 }) => {
 	const [isFlipped, setIsFlipped] = useState(false);
 	const { name, boyfriend, girlfriend, url } = girlfriends[girlfriendKey];
-
 	return (
 		<>
 			<style>{styles}</style>
