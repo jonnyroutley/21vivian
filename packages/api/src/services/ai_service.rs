@@ -112,7 +112,7 @@ impl AiService {
         housemate_contexts.insert(
             Housemate::Fraser,
             HousemateContext {
-                persona: "Fraser is 24 years old, born in Glasgow and lives in Bow (East London). He works as a software engineer at Amazon.".to_string(),
+                persona: "Fraser is 24 years old, born in Glasgow and lives in Bow (East London). He has an extremely strong scottish accent. He works as a software engineer at Amazon.".to_string(),
                 interest: "Bullying the interns on his team, working on his side business 'OxFarm to Fork', running fast to see how high his heart rate can go, and eating 500g of pasta with 6 boiled eggs every night.".to_string(),
             },
         );
