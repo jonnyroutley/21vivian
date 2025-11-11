@@ -293,9 +293,9 @@ export function EnergyChart({
 				</h2>
 				<ChartContainer
 					config={chartConfig}
-					className="min-h-[300px] w-full pr-10"
+					className="h-[600px] w-full pr-10"
 				>
-					<ResponsiveContainer>
+					<ResponsiveContainer height={600}>
 						<BarChart data={transformedData} barGap={4}>
 							<CartesianGrid vertical={false} />
 							<XAxis
