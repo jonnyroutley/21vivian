@@ -2,201 +2,159 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useMousePosition } from "@/hooks/useMousePosition";
 import { cn } from "@/lib/utils";
 
-function curve(distance: number) {
-	const gain = 0.5;
-	const shift = 1;
-	const spread = 40;
+type NavItem = {
+	href: string;
+	label: string;
+	bg: string;
+	fg: string;
+};
 
-	return (gain * 1) / Math.cosh(distance / spread - shift);
+const NAV_ITEMS: NavItem[] = [
+	{ href: "/", label: "home", bg: "#fbbf24", fg: "#1c1917" },
+	{ href: "/reviews", label: "reviews", bg: "#34d399", fg: "#1c1917" },
+	{ href: "/events", label: "events", bg: "#fb7185", fg: "#1c1917" },
+	{ href: "/car", label: "muriel", bg: "#38bdf8", fg: "#1c1917" },
+];
+
+const MAGNET_RADIUS = 200;
+const MAGNET_STRENGTH = 0.32;
+
+function magnet(dx: number, dy: number) {
+	const distance = Math.hypot(dx, dy);
+	if (distance >= MAGNET_RADIUS) {
+		return { x: 0, y: 0 };
+	}
+	const pull = (1 - distance / MAGNET_RADIUS) ** 1.5 * MAGNET_STRENGTH;
+	return { x: dx * pull, y: dy * pull };
 }
 
-const NavItems = [
-	{
-		href: "/",
-		text: "home",
-		xOff: 80,
-		yOff: 40,
-	},
-	{
-		href: "/reviews",
-		text: "reviews",
-		xOff: 60,
-		yOff: 30,
-	},
-	{
-		href: "/events",
-		text: "events",
-		xOff: 0,
-		yOff: 30,
-	},
-	{
-		href: "/car",
-		text: "muriel",
-		xOff: 30,
-		yOff: 55,
-	},
-];
-type RouteColour = {
-	primaryColour: string;
-	secondaryColour: string;
-	textColour: string;
-};
-
-type Routes = "home" | "reviews" | "events" | "car";
-
-const RouteColours: Record<Routes, RouteColour> = {
-	home: {
-		primaryColour: "#eab308",
-		secondaryColour: "#facc15",
-		textColour: "#fefce8",
-	},
-	reviews: {
-		primaryColour: "#eab308",
-		secondaryColour: "#facc15",
-		textColour: "#0a0a0a",
-	},
-	events: {
-		primaryColour: "#FF4848",
-		secondaryColour: "#b91c1c",
-		textColour: "#FF4848",
-	},
-	car: {
-		primaryColour: "#fbbf24",
-		secondaryColour: "#f59e0b",
-		textColour: "#fbbf24",
-	},
-};
+function useActiveItem() {
+	const pathname = usePathname();
+	return NAV_ITEMS.find((item) =>
+		item.href === "/" ? pathname === "/" : pathname.startsWith(item.href),
+	);
+}
 
 export function NavButton() {
+	const active = useActiveItem();
 	const pathname = usePathname();
-	const path = pathname.split("/").at(-1);
+	const mouse = useMousePosition();
 
-	let colours: RouteColour;
-	if (path && path in RouteColours) {
-		colours = RouteColours[path as keyof typeof RouteColours];
-	} else {
-		colours = RouteColours.home; // TODO: make default
-	}
+	const [open, setOpen] = useState(false);
+	const anchorRef = useRef<HTMLDivElement>(null);
+	const [center, setCenter] = useState<{ x: number; y: number } | null>(null);
 
-	const mousePosition = useMousePosition();
-	const [showMenu, setShowMenu] = useState(false);
-	const [navPosition, setNavPosition] = useState<{
-		x: number | null;
-		y: number | null;
-	}>({
-		x: null,
-		y: null,
-	});
+	useEffect(() => {
+		const measure = () => {
+			const el = anchorRef.current;
+			if (!el) {
+				return;
+			}
+			const rect = el.getBoundingClientRect();
+			setCenter({ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 });
+		};
+		measure();
+		window.addEventListener("resize", measure);
+		return () => window.removeEventListener("resize", measure);
+	}, []);
 
-	const xOff = (mousePosition.x ?? 0) - (navPosition.x ?? 0);
-	const yOff = (mousePosition.y ?? 0) - (navPosition.y ?? 0);
-	const distance = Math.sqrt(xOff ** 2 + yOff ** 2);
-	const translateX = curve(distance) * xOff;
-	const translateY = curve(distance) * yOff;
+	useEffect(() => {
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key === "Escape") {
+				setOpen(false);
+			}
+		};
+		window.addEventListener("keydown", onKey);
+		return () => window.removeEventListener("keydown", onKey);
+	}, []);
+
+	const pull =
+		!open && center && mouse.x !== null && mouse.y !== null
+			? magnet(mouse.x - center.x, mouse.y - center.y)
+			: { x: 0, y: 0 };
+
+	const triggerBg = active?.bg ?? "#fbbf24";
+	const triggerFg = active?.fg ?? "#1c1917";
 
 	return (
-		<>
-			<div
-				className={cn(
-					"lg: invisible absolute right-8 top-8 h-12 w-12 rounded-full font-mono md:h-16 md:w-16 lg:visible",
-				)}
-				style={{
-					transform: `translate(${translateX}px, ${translateY}px)`,
-					background: colours.secondaryColour,
-				}}
-				ref={(el) => {
-					if (!el) {
-						return;
-					}
-					const rect = el.getBoundingClientRect();
-					if (navPosition.x === null && navPosition.y === null) {
-						setNavPosition({
-							x: rect.x + rect.width / 2,
-							y: rect.y + rect.height / 2,
-						});
-					}
-				}}
-			>
+		<div className="fixed right-5 top-5 z-50 font-mono md:right-8 md:top-8">
+			{open && (
 				<button
-					className="h-full w-full rounded-full"
-					style={{
-						transform: `translate(${translateX * 1.1}px, ${translateY * 1.1}px)`,
-						background: colours.primaryColour,
-					}}
 					type="button"
-					onClick={() => setShowMenu(!showMenu)}
+					aria-hidden
+					tabIndex={-1}
+					onClick={() => setOpen(false)}
+					className="fixed inset-0 -z-10 cursor-default bg-transparent"
 				/>
-				<nav
-					className={cn(
-						"peer invisible opacity-0 transition-opacity duration-200",
-						showMenu && "lg:visible lg:opacity-100",
-					)}
-				>
-					<ul>
-						{NavItems.map((item) => {
-							return (
-								<li
-									key={item.href}
-									style={{
-										transform: `translate(${translateX - item.xOff}px, ${translateY - item.yOff}px )`,
-									}}
-								>
-									<Link
-										className="p-1 transition-colors duration-200"
-										href={item.href}
-										style={{ color: colours.textColour }}
-										onClick={() => setShowMenu(!showMenu)}
-									>
-										{item.text}
-									</Link>
-								</li>
-							);
-						})}
-					</ul>
-				</nav>
+			)}
+
+			<div ref={anchorRef} className="relative h-12 w-12 md:h-14 md:w-14">
+				<button
+					type="button"
+					aria-label="Toggle navigation menu"
+					aria-expanded={open}
+					onClick={() => setOpen((prev) => !prev)}
+					className="absolute inset-0 grid place-items-center rounded-full shadow-xl ring-1 ring-black/15 transition-[transform,filter] duration-200 ease-out hover:brightness-105 hover:shadow-2xl active:brightness-95 motion-reduce:transition-none"
+					style={{
+						background: triggerBg,
+						color: triggerFg,
+						transform: `translate(${pull.x}px, ${pull.y}px)`,
+					}}
+				/>
 			</div>
-			<button
-				type="button"
-				className="visible absolute right-8 top-8 z-10 h-12 w-12 rounded-full lg:invisible"
-				style={{
-					background: colours.primaryColour,
-				}}
-				onClick={() => setShowMenu(!showMenu)}
-				onBlur={() => setShowMenu(false)}
+
+			<nav
+				aria-label="Main navigation"
+				className={cn(
+					"absolute right-0 top-full mt-3",
+					open ? "pointer-events-auto" : "pointer-events-none",
+				)}
 			>
-				<nav
+				<div
 					className={cn(
-						"duration=200 opacity-0 transition-opacity lg:invisible",
-						showMenu && "visible opacity-100",
+						"origin-top-right rounded-[1.75rem] bg-neutral-950/85 p-3 shadow-2xl ring-1 ring-white/10 backdrop-blur-md transition-all duration-300 ease-out motion-reduce:transition-none",
+						open ? "scale-100 opacity-100" : "scale-90 opacity-0",
 					)}
 				>
-					<ul className="mt-14 flex w-fit flex-col items-center gap-2 rounded-md font-mono">
-						{NavItems.map((item) => {
+					<ul className="flex flex-col items-stretch gap-2">
+						{NAV_ITEMS.map((item, i) => {
+							const isActive =
+								item.href === "/"
+									? pathname === "/"
+									: pathname.startsWith(item.href);
 							return (
 								<li
 									key={item.href}
+									className="transition-all duration-300 ease-out motion-reduce:transition-none"
 									style={{
-										transform: `translate(${-item.xOff}px, ${-item.yOff}px )`,
+										transitionDelay: open ? `${i * 45}ms` : "0ms",
+										opacity: open ? 1 : 0,
+										transform: open ? "translateY(0)" : "translateY(-8px)",
 									}}
 								>
 									<Link
-										className="rounded-lg p-1 text-neutral-950 transition-colors duration-200"
 										href={item.href}
-										style={{ background: colours.secondaryColour }}
+										onClick={() => setOpen(false)}
+										className={cn(
+											"block min-w-[8rem] rounded-full px-5 py-2 text-center text-xl lowercase shadow-md transition-[transform,box-shadow] duration-200 ease-out hover:-translate-x-1 hover:scale-[1.04] hover:shadow-xl motion-reduce:transition-none",
+											isActive &&
+												"ring-2 ring-white ring-offset-2 ring-offset-neutral-950",
+										)}
+										style={{ background: item.bg, color: item.fg }}
 									>
-										{item.text}
+										{item.label}
 									</Link>
 								</li>
 							);
 						})}
 					</ul>
-				</nav>
-			</button>
-		</>
+				</div>
+			</nav>
+		</div>
 	);
 }
