@@ -1,3 +1,4 @@
+pub mod car;
 pub mod chat;
 pub mod event;
 pub mod info;
@@ -53,6 +54,10 @@ pub fn app_routes(
         },
         event::EventApi {
             db: Arc::clone(&db),
+        },
+        car::CarApi {
+            db: Arc::clone(&db),
+            pushsafer_service: pushsafer_service.clone(),
         },
         upload::UploadApi {
             db: Arc::clone(&db),

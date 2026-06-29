@@ -1,0 +1,15 @@
+"$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
+
+# Copy the gitignored local env files into every new workspace so both
+# packages can run. They hold secrets and are never committed, so Conductor
+# copies them from your repo root checkout. (Default pattern only matches
+# top-level .env*, but these live under packages/, hence explicit globs.)
+file_include_globs = "packages/api/.env\npackages/frontend/.env.local\n"
+
+[scripts]
+setup = ".conductor/setup.sh"
+run = "exec .conductor/run.sh"
+# Only one workspace can run the stack at a time: the API talks to a shared
+# Neon Postgres and runs migrations on boot, and the dev ports are fixed
+# (API 8000, web 8080).
+run_mode = "nonconcurrent"
