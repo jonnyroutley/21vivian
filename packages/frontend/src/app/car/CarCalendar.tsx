@@ -122,76 +122,81 @@ export function CarCalendar({
 					const overflow = dayBookings.length - visible.length;
 
 					return (
-						<button
-							type="button"
+						<div
 							key={day.format("YYYY-MM-DD")}
-							onClick={() => onDayClick(day)}
-							className={`group relative min-h-[5.5rem] border-b border-r border-neutral-800/70 p-1.5 text-left transition-colors hover:bg-neutral-800/40 sm:min-h-[7rem] ${
+							className={`group relative min-h-[5.5rem] border-b border-r border-neutral-800/70 sm:min-h-[7rem] ${
 								inMonth ? "" : "bg-neutral-950/40"
 							}`}
 						>
-							<div className="flex items-center justify-between">
-								<span
-									className={`flex h-6 w-6 items-center justify-center rounded-full font-mono text-xs ${
-										isToday
-											? "bg-amber-400 font-bold text-neutral-950"
-											: inMonth
-												? "text-neutral-300"
-												: "text-neutral-600"
-									}`}
-								>
-									{day.date()}
-								</span>
-								<span className="font-mono text-base text-neutral-700 opacity-0 transition-opacity group-hover:opacity-100">
-									+
-								</span>
-							</div>
+							<button
+								type="button"
+								onClick={() => onDayClick(day)}
+								aria-label={`Add a booking on ${day.format("D MMMM YYYY")}`}
+								className="absolute inset-0 z-0 transition-colors hover:bg-neutral-800/40"
+							/>
 
-							<div className="mt-1 flex flex-col gap-1">
-								{visible.map((booking) => {
-									const color = driverColor(booking.driver_name);
-									const isStart = dayjs(booking.starts_at).isSame(day, "day");
-									const isCompleted = booking.status === "completed";
-									const needsMileage = booking.status === "awaiting_completion";
-									return (
-										<button
-											type="button"
-											key={booking.id}
-											onClick={(e) => {
-												e.stopPropagation();
-												onSelectBooking(booking);
-											}}
-											style={{
-												backgroundColor: `${color}22`,
-												borderLeftColor: color,
-											}}
-											className={`flex items-center gap-1 overflow-hidden rounded-md border-l-[3px] px-1.5 py-0.5 text-left transition-opacity hover:opacity-80 ${
-												isCompleted ? "opacity-60" : ""
-											}`}
-										>
-											{isStart && (
-												<span className="hidden shrink-0 font-mono text-[0.6rem] text-neutral-400 sm:inline">
-													{dayjs(booking.starts_at).format("HH:mm")}
-												</span>
-											)}
-											<span className="truncate text-[0.7rem] font-medium text-neutral-100">
-												{booking.driver_name}
-											</span>
-											{needsMileage && (
-												<span className="ml-auto shrink-0 text-[0.6rem]">
-													⏱️
-												</span>
-											)}
-										</button>
-									);
-								})}
-								{overflow > 0 && (
-									<span className="px-1 font-mono text-[0.6rem] text-neutral-500">
-										+{overflow} more
+							<div className="pointer-events-none relative z-10 p-1.5">
+								<div className="flex items-center justify-between">
+									<span
+										className={`flex h-6 w-6 items-center justify-center rounded-full font-mono text-xs ${
+											isToday
+												? "bg-amber-400 font-bold text-neutral-950"
+												: inMonth
+													? "text-neutral-300"
+													: "text-neutral-600"
+										}`}
+									>
+										{day.date()}
 									</span>
-								)}
+									<span className="font-mono text-base text-neutral-700 opacity-0 transition-opacity group-hover:opacity-100">
+										+
+									</span>
+								</div>
+
+								<div className="mt-1 flex flex-col gap-1">
+									{visible.map((booking) => {
+										const color = driverColor(booking.driver_name);
+										const isStart = dayjs(booking.starts_at).isSame(day, "day");
+										const isCompleted = booking.status === "completed";
+										const needsMileage =
+											booking.status === "awaiting_completion";
+										return (
+											<button
+												type="button"
+												key={booking.id}
+												onClick={() => onSelectBooking(booking)}
+												style={{
+													backgroundColor: `${color}22`,
+													borderLeftColor: color,
+												}}
+												className={`pointer-events-auto flex items-center gap-1 overflow-hidden rounded-md border-l-[3px] px-1.5 py-0.5 text-left transition-opacity hover:opacity-80 ${
+													isCompleted ? "opacity-60" : ""
+												}`}
+											>
+												{isStart && (
+													<span className="hidden shrink-0 font-mono text-[0.6rem] text-neutral-400 sm:inline">
+														{dayjs(booking.starts_at).format("HH:mm")}
+													</span>
+												)}
+												<span className="truncate text-[0.7rem] font-medium text-neutral-100">
+													{booking.driver_name}
+												</span>
+												{needsMileage && (
+													<span className="ml-auto shrink-0 text-[0.6rem]">
+														⏱️
+													</span>
+												)}
+											</button>
+										);
+									})}
+									{overflow > 0 && (
+										<span className="px-1 font-mono text-[0.6rem] text-neutral-500">
+											+{overflow} more
+										</span>
+									)}
+								</div>
 							</div>
-						</button>
+						</div>
 					);
 				})}
 			</div>

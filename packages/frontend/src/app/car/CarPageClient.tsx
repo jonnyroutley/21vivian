@@ -46,6 +46,7 @@ export function CarPageClient({ bookings }: { bookings: CarBooking[] }) {
 	const [createOpen, setCreateOpen] = useState(false);
 	const [presetStart, setPresetStart] = useState<string | null>(null);
 	const [detailBooking, setDetailBooking] = useState<CarBooking | null>(null);
+	const [driving, setDriving] = useState(false);
 
 	const now = dayjs();
 	const milesThisMonth = bookings
@@ -83,7 +84,18 @@ export function CarPageClient({ bookings }: { bookings: CarBooking[] }) {
 						<h1
 							className={`text-6xl uppercase leading-none text-neutral-50 sm:text-8xl ${leagueGothic.className}`}
 						>
-							Muriel <span className="text-amber-400">🚗</span>
+							Muriel{" "}
+							<button
+								type="button"
+								onClick={() => setDriving(true)}
+								onAnimationEnd={() => setDriving(false)}
+								aria-label="Take Muriel for a spin"
+								className={`inline-block cursor-pointer text-amber-400 ${
+									driving ? "animate-drive-off" : ""
+								}`}
+							>
+								🚗
+							</button>
 						</h1>
 						<p className="mt-1 font-mono text-sm text-neutral-500">
 							VW Golf+ · book her, drive her, log the miles
