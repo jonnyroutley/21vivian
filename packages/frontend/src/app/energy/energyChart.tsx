@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import dayjs from "dayjs";
+import { useState } from "react";
 import {
 	Bar,
 	BarChart,
@@ -83,7 +83,8 @@ export function EnergyChart({
 		),
 	).sort();
 
-	const canGoBack = availableDates.length > 0 && selectedDate.isAfter(dayjs(availableDates[0]));
+	const canGoBack =
+		availableDates.length > 0 && selectedDate.isAfter(dayjs(availableDates[0]));
 	const canGoForward = selectedDate.isBefore(dayjs().subtract(1, "day"));
 
 	const goToPreviousDay = () => {
@@ -263,7 +264,8 @@ export function EnergyChart({
 				</div>
 				<div className="rounded-lg border border-cyan-400 bg-neutral-900 p-4">
 					<h3 className="text-sm text-neutral-400">
-						Total Gas ({viewMode === "weekly" ? "7d" : selectedDate.format("DD MMM")})
+						Total Gas (
+						{viewMode === "weekly" ? "7d" : selectedDate.format("DD MMM")})
 					</h3>
 					<p className="text-2xl font-bold text-cyan-400">
 						{totalGas.toFixed(2)} kWh
@@ -276,7 +278,9 @@ export function EnergyChart({
 			<div className="rounded-lg border border-green-400 bg-neutral-900 p-6 text-center">
 				<h3 className="text-lg text-neutral-400">
 					Total Cost (
-					{viewMode === "weekly" ? "Last 7 Days" : selectedDate.format("DD MMM YYYY")}
+					{viewMode === "weekly"
+						? "Last 7 Days"
+						: selectedDate.format("DD MMM YYYY")}
 					)
 				</h3>
 				<p className="text-4xl font-bold text-green-400">
@@ -291,10 +295,7 @@ export function EnergyChart({
 						? "Energy Consumption (Last 7 Days)"
 						: `Energy Consumption (${selectedDate.format("DD MMM YYYY")})`}
 				</h2>
-				<ChartContainer
-					config={chartConfig}
-					className="h-[600px] w-full pr-10"
-				>
+				<ChartContainer config={chartConfig} className="h-[600px] w-full pr-10">
 					<ResponsiveContainer height={600}>
 						<BarChart data={transformedData} barGap={4}>
 							<CartesianGrid vertical={false} />
@@ -327,7 +328,6 @@ export function EnergyChart({
 					</ResponsiveContainer>
 				</ChartContainer>
 			</div>
-
 		</div>
 	);
 }
