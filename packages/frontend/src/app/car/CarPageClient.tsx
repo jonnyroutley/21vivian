@@ -12,6 +12,7 @@ import { BookingDialog } from "./BookingDialog";
 import { CarCalendar } from "./CarCalendar";
 import { driverColor, STATUS_META } from "./constants";
 import { MonthlyBreakdown } from "./MonthlyBreakdown";
+import { TripLog } from "./TripLog";
 
 const leagueGothic = League_Gothic({ weight: "variable", subsets: ["latin"] });
 
@@ -228,6 +229,10 @@ export function CarPageClient({ bookings }: { bookings: CarBooking[] }) {
 
 			<div className="mt-6">
 				<MonthlyBreakdown bookings={bookings} />
+			</div>
+
+			<div className="mt-6">
+				<TripLog bookings={bookings} />
 			</div>
 
 			<BookingDialog

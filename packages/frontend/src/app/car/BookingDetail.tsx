@@ -2,8 +2,10 @@
 
 import dayjs from "dayjs";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-import type { CarBooking } from "@/actions/car";
+import { type CarBooking, deleteBooking } from "@/actions/car";
 
 import { CarModal } from "./CarModal";
 import { driverColor, STATUS_META } from "./constants";
@@ -26,9 +28,39 @@ export function BookingDetail({
 	booking: CarBooking | null;
 	setOpen: (val: boolean) => void;
 }) {
+	const router = useRouter();
 	const open = booking !== null;
 	const color = booking ? driverColor(booking.driver_name) : "#fbbf24";
 	const status = booking ? STATUS_META[booking.status] : undefined;
+
+	const [confirming, setConfirming] = useState(false);
+	const [deleting, setDeleting] = useState(false);
+	const [error, setError] = useState<string>();
+
+	useEffect(() => {
+		if (!open) {
+			setConfirming(false);
+			setDeleting(false);
+			setError(undefined);
+		}
+	}, [open]);
+
+	const handleDelete = async () => {
+		if (!booking) {
+			return;
+		}
+		setDeleting(true);
+		setError(undefined);
+		const result = await deleteBooking(booking.id);
+		setDeleting(false);
+
+		if (result.ok) {
+			setOpen(false);
+			router.refresh();
+		} else {
+			setError(result.error);
+		}
+	};
 
 	return (
 		<CarModal
@@ -92,6 +124,47 @@ export function BookingDetail({
 								: "All booked in. Keys are waiting."}
 						</p>
 					)}
+
+					<div className="mt-5 border-t border-neutral-800 pt-4">
+						{error && (
+							<p className="mb-3 rounded-lg border border-ra_red/40 bg-ra_red/10 px-3 py-2 text-sm text-ra_red">
+								{error}
+							</p>
+						)}
+						{confirming ? (
+							<div className="flex flex-col gap-2">
+								<p className="font-mono text-xs text-neutral-400">
+									Delete this booking for good? This can't be undone.
+								</p>
+								<div className="flex gap-2">
+									<button
+										type="button"
+										onClick={handleDelete}
+										disabled={deleting}
+										className="flex-1 rounded-lg bg-ra_red py-2 text-sm font-semibold text-neutral-950 transition-colors hover:bg-ra_red/90 disabled:cursor-not-allowed disabled:opacity-60"
+									>
+										{deleting ? "Deleting…" : "Yes, delete it"}
+									</button>
+									<button
+										type="button"
+										onClick={() => setConfirming(false)}
+										disabled={deleting}
+										className="flex-1 rounded-lg border border-neutral-700 py-2 text-sm font-medium text-neutral-300 transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60"
+									>
+										Keep it
+									</button>
+								</div>
+							</div>
+						) : (
+							<button
+								type="button"
+								onClick={() => setConfirming(true)}
+								className="font-mono text-xs uppercase tracking-wider text-neutral-500 transition-colors hover:text-ra_red"
+							>
+								🗑 Delete booking
+							</button>
+						)}
+					</div>
 				</div>
 			)}
 		</CarModal>

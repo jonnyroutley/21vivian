@@ -103,6 +103,16 @@ enum CompleteBookingResponse {
     InternalServerError,
 }
 
+#[derive(ApiResponse)]
+enum DeleteBookingResponse {
+    #[oai(status = 204)]
+    NoContent,
+    #[oai(status = 404)]
+    NotFound,
+    #[oai(status = 500)]
+    InternalServerError,
+}
+
 fn to_utc_string(dt: NaiveDateTime) -> String {
     dt.and_utc().to_rfc3339()
 }
@@ -317,6 +327,18 @@ impl CarApi {
             Err(err) => {
                 println!("Error completing car booking {}:\n{:?}", id, err);
                 CompleteBookingResponse::InternalServerError
+            }
+        }
+    }
+
+    #[oai(path = "/car/bookings/:id", method = "delete", tag = "ApiTags::Car")]
+    async fn delete_booking(&self, Path(id): Path<i32>) -> DeleteBookingResponse {
+        match car_bookings::Entity::delete_by_id(id).exec(&*self.db).await {
+            Ok(result) if result.rows_affected == 0 => DeleteBookingResponse::NotFound,
+            Ok(_) => DeleteBookingResponse::NoContent,
+            Err(err) => {
+                println!("Error deleting car booking {}:\n{:?}", id, err);
+                DeleteBookingResponse::InternalServerError
             }
         }
     }

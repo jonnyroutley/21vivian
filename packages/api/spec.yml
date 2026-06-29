@@ -161,6 +161,25 @@ paths:
           description: ''
         '500':
           description: ''
+    delete:
+      tags:
+      - Car
+      parameters:
+      - name: id
+        schema:
+          type: integer
+          format: int32
+        in: path
+        required: true
+        deprecated: false
+        explode: true
+      responses:
+        '204':
+          description: ''
+        '404':
+          description: ''
+        '500':
+          description: ''
   /car/bookings/{id}/complete:
     post:
       tags:
