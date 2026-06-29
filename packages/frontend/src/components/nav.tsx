@@ -34,6 +34,12 @@ const NavItems = [
 		xOff: 0,
 		yOff: 30,
 	},
+	{
+		href: "/car",
+		text: "muriel",
+		xOff: 30,
+		yOff: 55,
+	},
 ];
 type RouteColour = {
 	primaryColour: string;
@@ -41,7 +47,7 @@ type RouteColour = {
 	textColour: string;
 };
 
-type Routes = "home" | "reviews" | "events";
+type Routes = "home" | "reviews" | "events" | "car";
 
 const RouteColours: Record<Routes, RouteColour> = {
 	home: {
@@ -58,6 +64,11 @@ const RouteColours: Record<Routes, RouteColour> = {
 		primaryColour: "#FF4848",
 		secondaryColour: "#b91c1c",
 		textColour: "#FF4848",
+	},
+	car: {
+		primaryColour: "#fbbf24",
+		secondaryColour: "#f59e0b",
+		textColour: "#fbbf24",
 	},
 };
 

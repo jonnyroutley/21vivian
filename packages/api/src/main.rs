@@ -52,8 +52,8 @@ async fn main() -> Result<(), std::io::Error> {
     }
     // Connect to the database
 
-    let db = setup().await.unwrap();
-    Migrator::up(&db, None).await.unwrap();
+    let db = Arc::new(setup().await.unwrap());
+    Migrator::up(&*db, None).await.unwrap();
 
     let shared_config = aws_config::load_from_env().await;
 
@@ -61,7 +61,7 @@ async fn main() -> Result<(), std::io::Error> {
     let s3_service = S3Service::new(s3_client);
 
     let pushsafer_client = reqwest::Client::new();
-    let pushsafer_service = PushsaferService::new(pushsafer_client);
+    let pushsafer_service = Arc::new(PushsaferService::new(pushsafer_client));
 
     let ai_client = reqwest::Client::new();
     let ai_service = AiService::new(
@@ -70,12 +70,17 @@ async fn main() -> Result<(), std::io::Error> {
         env::var("GEMINI_BASE_URL").unwrap(),
     );
 
+    tokio::spawn(routes::car::run_reminder_loop(
+        Arc::clone(&db),
+        Arc::clone(&pushsafer_service),
+    ));
+
     let startup_time = Utc::now();
     let app = routes::app_routes(
-        Arc::new(db),
+        Arc::clone(&db),
         startup_time,
         s3_service,
-        Arc::new(pushsafer_service),
+        Arc::clone(&pushsafer_service),
         Arc::new(ai_service),
     )
     .with(Tracing);
