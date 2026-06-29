@@ -114,3 +114,16 @@ export async function completeBooking(
 
 	return { ok: false, error: await readError(res) };
 }
+
+export async function deleteBooking(id: number): Promise<MutationResult> {
+	const res = await fetch(`${config.apiBaseUrl}/car/bookings/${id}`, {
+		method: "DELETE",
+	});
+
+	if (res.ok) {
+		revalidatePath("/car");
+		return { ok: true };
+	}
+
+	return { ok: false, error: await readError(res) };
+}

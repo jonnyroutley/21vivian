@@ -4,538 +4,794 @@
  */
 
 export interface paths {
-	"/reviews": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get: {
-			parameters: {
-				query?: never;
-				header?: never;
-				path?: never;
-				cookie?: never;
-			};
-			requestBody?: never;
-			responses: {
-				/** @description Returns when the review is successfully created. */
-				201: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						"application/json; charset=utf-8": components["schemas"]["Review"][];
-					};
-				};
-				/** @description Likely an issue with the database connection. */
-				500: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content?: never;
-				};
-			};
-		};
-		put?: never;
-		post: {
-			parameters: {
-				query?: never;
-				header?: never;
-				path?: never;
-				cookie?: never;
-			};
-			requestBody: {
-				content: {
-					"application/json; charset=utf-8": components["schemas"]["InputModel"];
-				};
-			};
-			responses: {
-				/** @description Returns when the review is successfully created. */
-				201: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content?: never;
-				};
-				/** @description The user has sent bad data. */
-				400: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						"application/json; charset=utf-8": components["schemas"]["ErrorMessage"];
-					};
-				};
-				/** @description Issue adding the review to the database. */
-				500: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content?: never;
-				};
-			};
-		};
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/events": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get: {
-			parameters: {
-				query?: never;
-				header?: never;
-				path?: never;
-				cookie?: never;
-			};
-			requestBody?: never;
-			responses: {
-				/** @description Returns a list of the events */
-				200: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						"application/json; charset=utf-8": components["schemas"]["EventDto"][];
-					};
-				};
-				/** @description Likely an issue with the database connection. */
-				500: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content?: never;
-				};
-			};
-		};
-		put?: never;
-		post: {
-			parameters: {
-				query?: never;
-				header?: never;
-				path?: never;
-				cookie?: never;
-			};
-			requestBody: {
-				content: {
-					"application/json; charset=utf-8": components["schemas"]["CreateEventInput"];
-				};
-			};
-			responses: {
-				/** @description Returns a list of the events */
-				200: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content?: never;
-				};
-				/** @description Likely an issue with the database connection. */
-				500: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content?: never;
-				};
-			};
-		};
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/events/attendee": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		post: {
-			parameters: {
-				query?: never;
-				header?: never;
-				path?: never;
-				cookie?: never;
-			};
-			requestBody: {
-				content: {
-					"application/json; charset=utf-8": components["schemas"]["AttendeeInputModel"];
-				};
-			};
-			responses: {
-				/** @description Returns a list of the events */
-				200: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content?: never;
-				};
-				/** @description Likely an issue with the database connection. */
-				500: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content?: never;
-				};
-			};
-		};
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/upload/presigned-link/{object}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get: {
-			parameters: {
-				query?: never;
-				header?: never;
-				path: {
-					object: string;
-				};
-				cookie?: never;
-			};
-			requestBody?: never;
-			responses: {
-				/** @description Returns a list of the events */
-				200: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						"application/json; charset=utf-8": components["schemas"]["PresignedLinkDto"];
-					};
-				};
-				/** @description Likely an issue with the database connection. */
-				500: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content?: never;
-				};
-			};
-		};
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/upload": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		post: {
-			parameters: {
-				query?: never;
-				header?: never;
-				path?: never;
-				cookie?: never;
-			};
-			requestBody: {
-				content: {
-					"multipart/form-data": {
-						/** Format: binary */
-						upload: string;
-					};
-				};
-			};
-			responses: {
-				/** @description Returns a list of the events */
-				200: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						"application/json; charset=utf-8": components["schemas"]["UploadImageDto"];
-					};
-				};
-				/** @description Likely an issue with the database connection. */
-				500: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content?: never;
-				};
-			};
-		};
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/info": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get: {
-			parameters: {
-				query?: never;
-				header?: never;
-				path?: never;
-				cookie?: never;
-			};
-			requestBody?: never;
-			responses: {
-				/** @description Returns the last deployment time */
-				200: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						"text/plain; charset=utf-8": string;
-					};
-				};
-			};
-		};
-		put?: never;
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/notify": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		post: {
-			parameters: {
-				query?: never;
-				header?: never;
-				path?: never;
-				cookie?: never;
-			};
-			requestBody: {
-				content: {
-					"application/json; charset=utf-8": components["schemas"]["SendNotificationRequest"];
-				};
-			};
-			responses: {
-				/** @description Returns a list of the events */
-				200: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						"application/json; charset=utf-8": components["schemas"]["SuccessMessage"];
-					};
-				};
-				/** @description Likely an issue with the database connection. */
-				500: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content?: never;
-				};
-			};
-		};
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/chat": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		post: {
-			parameters: {
-				query?: never;
-				header?: never;
-				path?: never;
-				cookie?: never;
-			};
-			requestBody: {
-				content: {
-					"application/json; charset=utf-8": components["schemas"]["ChatInput"];
-				};
-			};
-			responses: {
-				200: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						"application/json; charset=utf-8": components["schemas"]["ChatDto"];
-					};
-				};
-			};
-		};
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/chat/{housemate}": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		put?: never;
-		post: {
-			parameters: {
-				query?: never;
-				header?: never;
-				path: {
-					housemate: components["schemas"]["Housemate"];
-				};
-				cookie?: never;
-			};
-			requestBody: {
-				content: {
-					"application/json; charset=utf-8": components["schemas"]["ChatInput"];
-				};
-			};
-			responses: {
-				200: {
-					headers: {
-						[name: string]: unknown;
-					};
-					content: {
-						"application/json; charset=utf-8": components["schemas"]["ChatDto"];
-					};
-				};
-			};
-		};
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
+    "/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Returns when the review is successfully created. */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["Review"][];
+                    };
+                };
+                /** @description Likely an issue with the database connection. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json; charset=utf-8": components["schemas"]["InputModel"];
+                };
+            };
+            responses: {
+                /** @description Returns when the review is successfully created. */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description The user has sent bad data. */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["ErrorMessage"];
+                    };
+                };
+                /** @description Issue adding the review to the database. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Returns a list of the events */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["EventDto"][];
+                    };
+                };
+                /** @description Likely an issue with the database connection. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json; charset=utf-8": components["schemas"]["CreateEventInput"];
+                };
+            };
+            responses: {
+                /** @description Returns a list of the events */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Likely an issue with the database connection. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/attendee": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json; charset=utf-8": components["schemas"]["AttendeeInputModel"];
+                };
+            };
+            responses: {
+                /** @description Returns a list of the events */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Likely an issue with the database connection. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/car/bookings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["CarBookingDto"][];
+                    };
+                };
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json; charset=utf-8": components["schemas"]["CreateBookingInput"];
+                };
+            };
+            responses: {
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["CarBookingDto"];
+                    };
+                };
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["CarErrorMessage"];
+                    };
+                };
+                /** @description The booking clashes with an existing one, or the dates are invalid. */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["CarErrorMessage"];
+                    };
+                };
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/car/bookings/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["CarBookingDto"];
+                    };
+                };
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/car/bookings/{id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json; charset=utf-8": components["schemas"]["CompleteBookingInput"];
+                };
+            };
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["CarBookingDto"];
+                    };
+                };
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["CarErrorMessage"];
+                    };
+                };
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/upload/presigned-link/{object}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    object: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Returns a list of the events */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["PresignedLinkDto"];
+                    };
+                };
+                /** @description Likely an issue with the database connection. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /** Format: binary */
+                        upload: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Returns a list of the events */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["UploadImageDto"];
+                    };
+                };
+                /** @description Likely an issue with the database connection. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/info": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Returns the last deployment time */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain; charset=utf-8": string;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json; charset=utf-8": components["schemas"]["SendNotificationRequest"];
+                };
+            };
+            responses: {
+                /** @description Returns a list of the events */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["SuccessMessage"];
+                    };
+                };
+                /** @description Likely an issue with the database connection. */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json; charset=utf-8": components["schemas"]["ChatInput"];
+                };
+            };
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["ChatDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/chat/{housemate}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    housemate: components["schemas"]["Housemate"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json; charset=utf-8": components["schemas"]["ChatInput"];
+                };
+            };
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json; charset=utf-8": components["schemas"]["ChatDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-	schemas: {
-		Attendee: {
-			/** Format: int32 */
-			id: number;
-			/** Format: int32 */
-			event_id: number;
-			name: string;
-			/** Format: naive-date-time */
-			created_at: string;
-		};
-		AttendeeInputModel: {
-			name: string;
-			/** Format: int32 */
-			event_id: number;
-		};
-		ChatDto: {
-			message: string;
-		};
-		ChatInput: {
-			message: string;
-		};
-		CreateEventInput: {
-			name: string;
-			location: string;
-			description: string;
-			starts_at: string;
-			ends_at: string;
-			/** Format: int32 */
-			image_id: number;
-		};
-		ErrorMessage: {
-			message: string;
-		};
-		EventDto: {
-			/** Format: int32 */
-			id: number;
-			name: string;
-			location: string;
-			description: string;
-			starts_at: string;
-			ends_at: string;
-			attendees: components["schemas"]["Attendee"][];
-			upload_key?: string;
-		};
-		/** @enum {string} */
-		Housemate: "Luke" | "Jonny" | "George" | "Fraser";
-		InputModel: {
-			name: string;
-			title: string;
-			description: string;
-			/** Format: int32 */
-			stars: number;
-		};
-		PresignedLinkDto: {
-			presigned_link: string;
-		};
-		Review: {
-			/** Format: int32 */
-			id: number;
-			name: string;
-			title: string;
-			description: string;
-			/** Format: int32 */
-			stars: number;
-			is_archived: boolean;
-			/** Format: naive-date-time */
-			created_at: string;
-		};
-		SendNotificationRequest: {
-			id: string;
-		};
-		SuccessMessage: {
-			message: string;
-		};
-		UploadImageDto: {
-			/** Format: int32 */
-			image_id: number;
-		};
-	};
-	responses: never;
-	parameters: never;
-	requestBodies: never;
-	headers: never;
-	pathItems: never;
+    schemas: {
+        Attendee: {
+            /** Format: int32 */
+            id: number;
+            /** Format: int32 */
+            event_id: number;
+            name: string;
+            /** Format: naive-date-time */
+            created_at: string;
+        };
+        AttendeeInputModel: {
+            name: string;
+            /** Format: int32 */
+            event_id: number;
+        };
+        CarBookingDto: {
+            /** Format: int32 */
+            id: number;
+            driver_name: string;
+            starts_at: string;
+            ends_at: string;
+            /** Format: int32 */
+            miles?: number;
+            paid_for_fuel: boolean;
+            /** Format: double */
+            fuel_cost?: number;
+            trip_note?: string;
+            completed_at?: string;
+            created_at: string;
+            /** @description One of: upcoming, active, awaiting_completion, completed */
+            status: string;
+        };
+        CarErrorMessage: {
+            message: string;
+        };
+        ChatDto: {
+            message: string;
+        };
+        ChatInput: {
+            message: string;
+        };
+        CompleteBookingInput: {
+            /** Format: int32 */
+            miles: number;
+            paid_for_fuel: boolean;
+            /** Format: double */
+            fuel_cost?: number;
+            trip_note?: string;
+        };
+        CreateBookingInput: {
+            driver_name: string;
+            starts_at: string;
+            ends_at: string;
+        };
+        CreateEventInput: {
+            name: string;
+            location: string;
+            description: string;
+            starts_at: string;
+            ends_at: string;
+            /** Format: int32 */
+            image_id: number;
+        };
+        ErrorMessage: {
+            message: string;
+        };
+        EventDto: {
+            /** Format: int32 */
+            id: number;
+            name: string;
+            location: string;
+            description: string;
+            starts_at: string;
+            ends_at: string;
+            attendees: components["schemas"]["Attendee"][];
+            upload_key?: string;
+        };
+        /** @enum {string} */
+        Housemate: "Luke" | "Jonny" | "George" | "Fraser";
+        InputModel: {
+            name: string;
+            title: string;
+            description: string;
+            /** Format: int32 */
+            stars: number;
+        };
+        PresignedLinkDto: {
+            presigned_link: string;
+        };
+        Review: {
+            /** Format: int32 */
+            id: number;
+            name: string;
+            title: string;
+            description: string;
+            /** Format: int32 */
+            stars: number;
+            is_archived: boolean;
+            /** Format: naive-date-time */
+            created_at: string;
+        };
+        SendNotificationRequest: {
+            id: string;
+        };
+        SuccessMessage: {
+            message: string;
+        };
+        UploadImageDto: {
+            /** Format: int32 */
+            image_id: number;
+        };
+    };
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export type operations = Record<string, never>;
