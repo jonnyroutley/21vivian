@@ -13,6 +13,7 @@ use services::{
 };
 use tracing_subscriber::{fmt::format::FmtSpan, EnvFilter};
 
+mod jobs;
 mod routes;
 pub mod services;
 
@@ -74,6 +75,10 @@ async fn main() -> Result<(), std::io::Error> {
         Arc::clone(&db),
         Arc::clone(&pushsafer_service),
     ));
+
+    tokio::spawn(jobs::run_christmas_picture_loop(Arc::clone(
+        &pushsafer_service,
+    )));
 
     let startup_time = Utc::now();
     let app = routes::app_routes(
