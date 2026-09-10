@@ -39,6 +39,18 @@ function daysUntilChristmasDinner() {
 	return Math.round((target.getTime() - today.getTime()) / 86_400_000);
 }
 
+// Capped on both axes so the digits stay huge without running into the caption
+// or the sides.
+function numberFontSize(days: number) {
+	if (days >= 100) {
+		return "min(40vw, 55vh)";
+	}
+	if (days >= 10) {
+		return "min(60vw, 62vh)";
+	}
+	return "min(75vw, 65vh)";
+}
+
 export default function ChristmasCountdown() {
 	const days = daysUntilChristmasDinner();
 	const { background, text } =
@@ -49,8 +61,13 @@ export default function ChristmasCountdown() {
 			className="flex h-screen w-full flex-col items-center justify-center overflow-hidden"
 			style={{ backgroundColor: background, color: text }}
 		>
-			<span className="font-bold text-[45vw] leading-[0.8]">{days}</span>
-			<span className="px-8 text-center text-xl uppercase tracking-[0.3em] sm:text-3xl">
+			<span
+				className="mb-[0.22em] font-bold"
+				style={{ fontSize: numberFontSize(days), lineHeight: 1 }}
+			>
+				{days}
+			</span>
+			<span className="w-full px-8 text-center text-base uppercase tracking-[0.2em] sm:text-3xl sm:tracking-[0.3em]">
 				{days === 0
 					? "christmas dinner today"
 					: `${days === 1 ? "day" : "days"} until christmas dinner`}
